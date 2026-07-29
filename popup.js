@@ -27,6 +27,10 @@ function onButtonClick(event) {
       .then(() => ensureGlobalScript(tabId, 'src/Diagram.js', 'Diagram'))
       .then(() => ensureGlobalScript(tabId, 'src/extensionHelpers.js', 'AsusRouterHelpers'))
       .then(() => ensureGlobalScript(tabId, 'src/clientData.js', 'AsusRouterClientData'))
+      .then(() => ensureGlobalScript(tabId, 'src/clientsTemplates.js', 'AsusRouterClientsTemplates'))
+      .then(() => ensureGlobalScript(tabId, 'src/clientsStyles.js', 'AsusRouterClientsStyles'))
+      .then(() => ensureGlobalScript(tabId, 'src/clientsUi.js', 'AsusRouterClientsUi'))
+      .then(() => ensureGlobalScript(tabId, 'src/clientsModule.js', 'AsusRouterClientsModule'))
       .then(() => executeJSScript(tabId, script))
       .then(() => window.close());
   });

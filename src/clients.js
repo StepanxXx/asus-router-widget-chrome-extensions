@@ -1,5 +1,9 @@
 (function () {
     const clientDataStore = AsusRouterClientData.createClientDataStore();
+    const { createClientsUi } = AsusRouterClientsUi;
+    const templates = AsusRouterClientsTemplates;
+    const styles = AsusRouterClientsStyles;
+    let ui = null;
     const config = {
         id: "clientsModal",
         title: "Clients",
@@ -23,7 +27,7 @@
                 while (container.firstChild) {
                     container.removeChild(container.lastChild);
                 }
-                container.appendChild(getHTML(obj));
+                container.appendChild(ui.getHTML(obj, { trafficMax: config.entity.traffic.max }));
             }
         },
         entity: {
@@ -202,28 +206,7 @@
 
 
     function getHTML(obj) {
-        //return "<pre>"+JSON.stringify(obj, null, 2)+"</pre>";
-        const table = document.createElement("table");
-        table.setAttribute("class", "table text-end table-hover table-dark table-sm")
-        const tbody = document.createElement("tbody")
-        table.appendChild(tbody);
-        config.cols.forEach( col => {
-            if(config.colsDontShow.includes(col)) return;
-            const tr = document.createElement("tr");
-            tbody.appendChild(tr);
-            const tdTitle  = document.createElement("td");
-            tdTitle.setAttribute("class", "text-start");
-            tr.appendChild(tdTitle);
-            tdTitle.innerHTML = config.colsHideName.includes(col) ? "" : col;
-            const maxSpeed = config.entity.traffic.max
-            if(col === "log") tdTitle.innerHTML = maxSpeed ? "Max per minute<div>"+cnvrtMbps(maxSpeed)+"</div>" : "";
-            for (item in obj) {
-                const td = document.createElement("td");
-                tr.appendChild(td);
-                displayValue(td, col, obj[item][col], obj[item]);
-            }
-        });
-        return table;
+        return ui.getHTML(obj, { trafficMax: config.entity.traffic.max });
     }
 
     function newModal() {
@@ -233,8 +216,7 @@
         addHead(dialog, config.title);
         const container = document.createElement("div");
         dialog.appendChild(container);
-        dialog.className 
-            = "bg-dark font-monospace text-light text-opacity-75 border border-secondary border-2 rounded";
+        dialog.className = styles.modal;
         container.innerHTML =`<h2><span class="badge bg-secondary">in progres...</span></h2>`
         dialog.showModal();
         config.viwe.container = container;
@@ -245,14 +227,14 @@
         container.setAttribute("style", "margin-bottom: 10px;");
         dialog.appendChild(container);
         const row = document.createElement("div");
-        row.className = "row";
+        row.className = styles.headerRow;
         container.appendChild(row);
         const colTitle = document.createElement("div");
         colTitle.innerHTML = title
-        colTitle.className = "col-10";
+        colTitle.className = styles.headerTitle;
         row.appendChild(colTitle);
         const colClose = document.createElement("div");
-        colClose.className = "col text-end";
+        colClose.className = styles.headerActions;
         row.appendChild(colClose);
         const closeButton = document.createElement("button");
         closeButton.setAttribute("id", config.id + "Button");
@@ -280,74 +262,64 @@
         config.viwe.intervalCode = setInterval(config.viwe.setViwe, config.inrevalSec * 1000);
     }
 
-    function displayValue(td, col, value, item) {
-        const isOnlineWifi = item.isWL !== "0" && item.isOnline === "1";
-        const isOnlineEthernet = item.isWL == "0" && item.isOnline === "1";
-        switch (true) {
-            case config.checkboxCols.includes(col): return td.innerHTML = getCheckbox(value);
-            case config.diagramCols.includes(col):  return td.appendChild(getDiagram(value));
-            case config.colsMB.includes(col):       return td.innerHTML = cnvrtMb(value) + getVector(col);
-            case config.colsMbps.includes(col):     return td.innerHTML = cnvrtMbps(value) + getVector(col);
-            case config.stateCols.includes(col):    return td.innerHTML = getStateView(value);
-            case config.typeCols.includes(col):     return td.innerHTML = getTypeView(value, item);
-            case col === "rssi" && isOnlineWifi:    return td.innerHTML = getWifiRssiView(value);
-            case col === "rssi" && isOnlineEthernet:    return td.innerHTML = getRssiEthernetView(value);
-            case col === "internetState":           return td.innerHTML = getInternetState(value);
-            case col === "nickName":                return td.innerHTML = getTruncatedValue(value, 24);
-            default:                                return td.innerHTML = value;
-        }
-    /*
-    <div class="radioIcon radio_2" title="Радіо: Хороший
-Tx Rate: 408.3
-Rx Rate: 6
-Час доступу: 00:14:04"></div>
-    */
-    }
+    ui = createClientsUi(config, {
+        isWLConfig,
+        rssiConfig,
+        icon: templates.icon,
+        cnvrtMbps,
+        cnvrtMb,
+        getVector,
+        getCheckbox,
+        getStateView,
+        getInternetState,
+        getWifiRssiView,
+        getRssiEthernetView,
+        getConectionTypeView,
+        getCheckboxWrapper,
+        getTypeView,
+        getTitleView,
+        convertRSSI,
+        getDiagram,
+        getTruncatedValue,
+    });
 
-    function getTruncatedValue(value, maxLength = 24) {
+    function getTruncatedValue(value, maxLength = 18) {
         return AsusRouterHelpers.truncateText(value, maxLength);
     }
 
     function getWifiRssiView(value) {
-        const  rssiLevel = convertRSSI(value);
-        classList = `d-inline-block position-absolute radioIcon radio_${rssiLevel}`;
+        const rssiLevel = convertRSSI(value);
+        const classList = `d-inline-block position-absolute radioIcon radio_${rssiLevel}`;
         const style = `width: 70%; height: 18px; background-position-x: right; padding-right: 30px; bottom: 0.5rem; right: 0.5rem;`;
-        return `<div style="${style}"  class="${classList}" title="${rssiConfig[rssiLevel].text}">rssi ${value}</div>`
-        // +`${value} <span style = "display: inline-block; height: 20px; width: 20px;" class="text-info">${icon["wifiPower"+rssiLevel]}</span>`
+        return `<div style="${style}" class="${classList}" title="${rssiConfig[rssiLevel].text}">rssi ${value}</div>`;
     }
-    // function getWifiRssiView(value) {
-    //     const  rssiLevel = convertRSSI(value);
-    //     return `<div style="width: 100%; height: 100%; background-position-x: right; padding-right: 36px;"  class="radioIcon radio_${rssiLevel}" title="${rssiConfig[rssiLevel].text}">${value}</div>`
-    //     // +`${value} <span style = "display: inline-block; height: 20px; width: 20px;" class="text-info">${icon["wifiPower"+rssiLevel]}</span>`
-    // }
 
     function getRssiEthernetView() {
-        return `<div style="width: 100%;background-position-x: right;padding-right: 36px;height: 19px;background-size: contain;"  class="radioIcon radio_wired" title="Дротове з'єднання"></div>`
+        return `<div style="width: 100%;background-position-x: right;padding-right: 36px;height: 19px;background-size: contain;" class="radioIcon radio_wired" title="Дротове з'єднання"></div>`;
     }
-
 
     function getConectionTypeView(value, item) {
         if (!isWLConfig[value]) return "";
         const isWifi = item.isWL !== "0";
         const isOnline = item.isOnline === "1";
-        const color = isOnline ? "text-info" : "text-secondary" ;
+        const color = isOnline ? "text-info" : "text-secondary";
         const classList = `d-inline-block position-absolute fw-bold text-end ${color}`;
         const style = `top: 0.5rem; right: 0.5rem;`;
         if (isWifi) {
             const rssiLevel = convertRSSI(item.rssi);
-            const title = isOnline ? rssiConfig[rssiLevel].text + ": rssi " + item.rssi :  "";
-            const name = isWLConfig[value].text + ( isWLConfig[value].idx == 1 ? "" : " - " + isWLConfig[value].idx )
-            return `<div style="width: 70px; ${style}"  title="${title}" class="${classList}": ">
+            const title = isOnline ? rssiConfig[rssiLevel].text + ": rssi " + item.rssi : "";
+            const name = isWLConfig[value].text + (isWLConfig[value].idx == 1 ? "" : " - " + isWLConfig[value].idx);
+            return `<div style="width: 70px; ${style}" title="${title}" class="${classList}">
                 <div class="d-inline-block fs-1" style="height: 35px; width: 35px; margin-bottom: -10px;">${icon.wifi}</div>
                 <div>${name}</div>
             </div>`;
         }
-        return `<div style="height: 35px; width: 35px; ${style}"; " class="${classList}" title="Дротове з'єднання">${icon.ethernet}</div>`
+        return `<div style="height: 35px; width: 35px; ${style}" class="${classList}" title="Дротове з'єднання">${icon.ethernet}</div>`;
     }
 
     function getCheckboxWrapper(value, isOnline) {
-        const title = isOnline ? "Is online": "Is offline";
-        const classList  = `d-inline-block position-absolute text-start`;
+        const title = isOnline ? "Is online" : "Is offline";
+        const classList = `d-inline-block position-absolute text-start`;
         const style = `width: 70%; height: 18px; bottom: 0.5rem; left: 0.5rem;`;
         return `<div style="${style}" class="${classList}" title="${title}">${value}</div>`;
     }
@@ -358,18 +330,17 @@ Rx Rate: 6
         const rssi = isOnlineWifi ? getWifiRssiView(item.rssi) : "";
         const borderColor = isOnline ? "border-info" : "border-secondary";
         const classList = `rounded border ${borderColor} position-relative p-2 type${value}`;
-        const title = isOnline ? "Is online": "Is offline";
+        const title = isOnline ? "Is online" : "Is offline";
         const style = `width: 100%; height: 100px; background-repeat: no-repeat;`;
         const switcCheckbox = getCheckbox(isOnline ? 1 : 0);
-        const switcWrapper =  getCheckboxWrapper(switcCheckbox, isOnline);
+        const switcWrapper = getCheckboxWrapper(switcCheckbox, isOnline);
         return `${getTitleView(item.name, item)}
         <div style="${style}" class="${classList}" title="${title}">
             ${getConectionTypeView(item.isWL, item)}
             ${rssi}
             ${switcWrapper}
             ${getInternetState(item.internetState)}
-        </div>`
-        
+        </div>`;
     }
 
     function getTitleView(value = "", item) {
@@ -377,7 +348,7 @@ Rx Rate: 6
         const textColor = isOnline ? "text-info" : "text-secondary";
         const classList = `text-center fs-6 font-monospace ${textColor}`;
         const name = value.substring(0, 12) + (value.length > 12 ? "..." : "");
-        return `<p class="${classList}" title="name: ${value}" >${name}</p>`
+        return `<p class="${classList}" title="name: ${value}">${name}</p>`;
     }
 
     function convertRSSI(value) {
@@ -389,29 +360,26 @@ Rx Rate: 6
         else return 1;
         if (result == 0) result = 1;
         return result + "";
-    };
+    }
 
     function getDiagram(value) {
-
-        const points = !value ? [] : value.map( speed => speed.out);
-        const points2 = !value ? [] : value.map( speed => speed.inc);
-
+        const points = !value ? [] : value.map((speed) => speed.out);
+        const points2 = !value ? [] : value.map((speed) => speed.inc);
         const canvas = document.createElement("canvas");
 
         const diagramConfig = {
-            canvas: canvas,
-            width: 150, 
+            canvas,
+            width: 150,
             height: 50,
             maxPoints: 30,
             step: 15,
             corector: 10,
             min: 0,
-            max: config.entity.traffic.max
+            max: config.entity.traffic.max,
         };
-        const diagram = new Diagram (diagramConfig);
-        diagram.drawDiagram(points, "220, 134, 142")     
-        diagram.drawDiagram(points2, "25, 135, 84")
-        
+        const diagram = new Diagram(diagramConfig);
+        diagram.drawDiagram(points, "220, 134, 142");
+        diagram.drawDiagram(points2, "25, 135, 84");
         return canvas;
     }
 
@@ -421,7 +389,7 @@ Rx Rate: 6
         resultNumber = resultNumber < 0 ? 0 : resultNumber;
         let result = resultNumber.toLocaleString() + " Mbps";
         result = getSpase(15 - result.length) + result;
-        return  result;
+        return result;
     }
 
     function cnvrtMb(value) {
@@ -439,38 +407,29 @@ Rx Rate: 6
     }
 
     function getVector(vector) {
-        const inc =  ["inc", "speedInc"].includes(vector);
-        const out =  ["out", "speedOut"].includes(vector);
-        const color = inc ? "text-success" : "text-danger" ;
-        const icon = out ? "&#9650": "&#9660";
-        return `<span class="${color}">${icon}</span>`
-        /*
-        9660 '▼'
-        9650 '▲'
-        8593 '↑'
-        8595 '↓'
-        '🛇' 128711
-            String.fromCodePoint(parseInt('1F6C7', 16))
-            String.fromCodePoint(128711)
-        */
+        const inc = ["inc", "speedInc"].includes(vector);
+        const out = ["out", "speedOut"].includes(vector);
+        const color = inc ? "text-success" : "text-danger";
+        const icon = out ? "&#9650" : "&#9660";
+        return `<span class="${color}">${icon}</span>`;
     }
 
     function getCheckbox(value) {
-        if (value >=1) return `
+        if (value >= 1) return `
         <span class="form-switch">
             <input class="form-check-input" type="checkbox" checked onclick="return false">
-        </span>`
+        </span>`;
         return `
         <span class="form-switch">
             <input class="form-check-input" type="checkbox" disabled>
-        </span>`
+        </span>`;
     }
-    
+
     function getStateView(value) {
-        if (!["block","allow"].includes(value)) return value;
-        const color = value == "block" ? "text-danger" : ""
-        const icon = value == "block" ? "&#128711" : "&#10003"
-        return `<p class="fw-bold text-end ${color}" title="${value}">${icon}</p>`
+        if (!["block", "allow"].includes(value)) return value;
+        const color = value == "block" ? "text-danger" : "";
+        const icon = value == "block" ? "&#128711" : "&#10003";
+        return `<p class="fw-bold text-end ${color}" title="${value}">${icon}</p>`;
     }
 
     function getInternetState(value) {
@@ -479,16 +438,9 @@ Rx Rate: 6
         const color = value == 0 ? "text-danger" : "text-info";
         const icon = value == 0 ? "&#128711" : "&#10003";
         const title = value == 0 ? "internetState = Block Internet access" : "internetState = Allow Internet access";
-        // const id = Math.random();
         const classList = `d-inline-block position-absolute fw-bold text-start ${color}`;
         const style = `width: 18%; height: 26px; top: 1.6rem; left: 1.6rem; font-size: 26px;`;
-        return `<h4 style="${style}" class="${classList}" title="${title}">${icon}</h4>`
-        // if (value >=1) return `
-        //     <input type="radio" class="btn-check" name="options${id}" id="optio${id}" autocomplete="off" onclick="return false">
-        //     <label  style="${style}" class="btn btn-dark ${color}" title="${title}" for="option${id}">${icon}</label>`
-        // return `
-        //     <input type="radio" class="btn-check" name="options${id}" id="option${id}" autocomplete="off" onclick="return false">
-        //     <label  style="${style}" class="btn btn-dark ${value === 0 ? color : ''}" title="${value === 0 ? title : ''}" for="option${id}">${value === 0 ? icon : value}</label>`
+        return `<h4 style="${style}" class="${classList}" title="${title}">${icon}</h4>`;
     }
 
 })()

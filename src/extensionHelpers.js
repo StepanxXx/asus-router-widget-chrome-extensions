@@ -16,7 +16,7 @@
       .replace(/>/g, "&gt;");
   }
 
-  function truncateText(value, maxLength = 24) {
+  function truncateText(value, maxLength = 18) {
     const text = String(value ?? "");
     if (text.length <= maxLength) return escapeHtml(text);
 

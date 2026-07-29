@@ -5,7 +5,7 @@
 
     function getHTML(obj, state) {
       const table = document.createElement('table');
-      table.setAttribute('class', styles?.table || 'table text-end table-hover table-dark table-sm');
+      table.setAttribute('class', styles?.table || 'clients-table');
       const tbody = document.createElement('tbody');
       table.appendChild(tbody);
 
@@ -14,7 +14,7 @@
         const tr = document.createElement('tr');
         tbody.appendChild(tr);
         const tdTitle = document.createElement('td');
-        tdTitle.setAttribute('class', styles?.titleCell || 'text-start');
+        tdTitle.setAttribute('class', styles?.titleCell || 'clients-title-cell');
         tr.appendChild(tdTitle);
         tdTitle.innerHTML = config.colsHideName.includes(col) ? '' : col;
         const maxSpeed = state?.trafficMax;
@@ -54,53 +54,47 @@
 
     function getWifiRssiView(value) {
       const rssiLevel = convertRSSI(value);
-      const classList = `d-inline-block position-absolute radioIcon radio_${rssiLevel}`;
-      const style = `width: 70%; height: 18px; background-position-x: right; padding-right: 30px; bottom: 0.5rem; right: 0.5rem;`;
-      return `<div style="${style}" class="${classList}" title="${rssiConfig[rssiLevel].text}">rssi ${value}</div>`;
+      const classList = `clients-rssi clients-rssi--wifi radioIcon radio_${rssiLevel}`;
+      return `<div class="${classList}" title="${rssiConfig[rssiLevel].text}">rssi ${value}</div>`;
     }
 
     function getRssiEthernetView() {
-      return `<div style="width: 100%;background-position-x: right;padding-right: 36px;height: 19px;background-size: contain;" class="radioIcon radio_wired" title="Дротове з'єднання"></div>`;
+      return '<div class="clients-rssi clients-rssi--wired radioIcon radio_wired" title="Дротове з\'єднання"></div>';
     }
 
     function getConectionTypeView(value, item) {
       if (!isWLConfig[value]) return '';
       const isWifi = item.isWL !== '0';
       const isOnline = item.isOnline === '1';
-      const color = isOnline ? 'text-info' : 'text-secondary';
-      const classList = `d-inline-block position-absolute fw-bold text-end ${color}`;
-      const style = 'top: 0.5rem; right: 0.5rem;';
+      const stateClass = isOnline ? 'is-online' : 'is-offline';
+      const title = isOnline ? `${rssiConfig[convertRSSI(item.rssi)].text}: rssi ${item.rssi}` : '';
+      const name = isWLConfig[value].text + (isWLConfig[value].idx == 1 ? '' : ` - ${isWLConfig[value].idx}`);
+
       if (isWifi) {
-        const rssiLevel = convertRSSI(item.rssi);
-        const title = isOnline ? `${rssiConfig[rssiLevel].text}: rssi ${item.rssi}` : '';
-        const name = isWLConfig[value].text + (isWLConfig[value].idx == 1 ? '' : ` - ${isWLConfig[value].idx}`);
-        return `<div style="width: 70px; ${style}" title="${title}" class="${classList}">
-          <div class="d-inline-block fs-1" style="height: 35px; width: 35px; margin-bottom: -10px;">${icon.wifi}</div>
-          <div>${name}</div>
+        return `<div class="clients-connection-type ${stateClass}" title="${title}">
+          <div class="clients-connection-icon">${icon.wifi}</div>
+          <div class="clients-connection-type-name">${name}</div>
         </div>`;
       }
-      return `<div style="height: 35px; width: 35px; ${style}" class="${classList}" title="Дротове з'єднання">${icon.ethernet}</div>`;
+
+      return `<div class="clients-connection-type ${stateClass}" title="Дротове з'єднання"><div class="clients-connection-icon">${icon.ethernet}</div></div>`;
     }
 
     function getCheckboxWrapper(value, isOnline) {
       const title = isOnline ? 'Is online' : 'Is offline';
-      const classList = 'd-inline-block position-absolute text-start';
-      const style = 'width: 70%; height: 18px; bottom: 0.5rem; left: 0.5rem;';
-      return `<div style="${style}" class="${classList}" title="${title}">${value}</div>`;
+      return `<div class="clients-checkbox-wrapper ${isOnline ? 'is-online' : 'is-offline'}" title="${title}">${value}</div>`;
     }
 
     function getTypeView(value, item) {
       const isOnline = item.isOnline === '1';
       const isOnlineWifi = item.isWL !== '0' && isOnline;
       const rssi = isOnlineWifi ? getWifiRssiView(item.rssi) : '';
-      const borderColor = isOnline ? 'border-info' : 'border-secondary';
-      const classList = `rounded border ${borderColor} position-relative p-2 type${value}`;
+      const stateClass = isOnline ? 'is-online' : 'is-offline';
       const title = isOnline ? 'Is online' : 'Is offline';
-      const style = 'width: 100%; height: 100px; background-repeat: no-repeat;';
       const switchCheckbox = getCheckbox(isOnline ? 1 : 0);
       const switchWrapper = getCheckboxWrapper(switchCheckbox, isOnline);
       return `${getTitleView(item.name, item)}
-      <div style="${style}" class="${classList}" title="${title}">
+      <div class="clients-connection-card ${stateClass}" title="${title}">
         ${getConectionTypeView(item.isWL, item)}
         ${rssi}
         ${switchWrapper}
@@ -110,10 +104,9 @@
 
     function getTitleView(value = '', item) {
       const isOnline = item.isOnline === '1';
-      const textColor = isOnline ? 'text-info' : 'text-secondary';
-      const classList = `text-center fs-6 font-monospace ${textColor}`;
+      const stateClass = isOnline ? 'is-online' : 'is-offline';
       const name = value.substring(0, 12) + (value.length > 12 ? '...' : '');
-      return `<p class="${classList}" title="name: ${value}">${name}</p>`;
+      return `<p class="clients-card-title ${stateClass}" title="name: ${value}">${name}</p>`;
     }
 
     function convertRSSI(value) {
@@ -131,6 +124,7 @@
       const points = !value ? [] : value.map((speed) => speed.out);
       const points2 = !value ? [] : value.map((speed) => speed.inc);
       const canvas = document.createElement('canvas');
+      canvas.className = 'clients-diagram';
       const diagramConfig = {
         canvas,
         width: 150,
@@ -180,31 +174,29 @@
 
     function getCheckbox(value) {
       if (value >= 1) return `
-        <span class="form-switch">
+        <span class="clients-form-switch form-switch">
             <input class="form-check-input" type="checkbox" checked onclick="return false">
         </span>`;
       return `
-        <span class="form-switch">
+        <span class="clients-form-switch form-switch">
             <input class="form-check-input" type="checkbox" disabled>
         </span>`;
     }
 
     function getStateView(value) {
       if (!['block', 'allow'].includes(value)) return value;
-      const color = value === 'block' ? 'text-danger' : '';
+      const color = value === 'block' ? 'is-danger' : 'is-muted';
       const iconValue = value === 'block' ? '&#128711' : '&#10003';
-      return `<p class="fw-bold text-end ${color}" title="${value}">${iconValue}</p>`;
+      return `<p class="clients-state-badge ${color}" title="${value}">${iconValue}</p>`;
     }
 
     function getInternetState(value) {
       if (['1', 1].includes(value)) return '';
       if (!['1', 1, 0].includes(value)) return `InternetState: ${value}`;
-      const color = value == 0 ? 'text-danger' : 'text-info';
+      const stateClass = value == 0 ? 'is-offline' : 'is-online';
       const iconValue = value == 0 ? '&#128711' : '&#10003';
       const title = value == 0 ? 'internetState = Block Internet access' : 'internetState = Allow Internet access';
-      const classList = `d-inline-block position-absolute fw-bold text-start ${color}`;
-      const style = 'width: 18%; height: 26px; top: 1.6rem; left: 1.6rem; font-size: 26px;';
-      return `<h4 style="${style}" class="${classList}" title="${title}">${iconValue}</h4>`;
+      return `<h4 class="clients-internet-state ${stateClass}" title="${title}">${iconValue}</h4>`;
     }
 
     return {

@@ -26,12 +26,12 @@ function onButtonClick(event) {
     insertCSS(tabId)
       .then(() => ensureGlobalScript(tabId, 'src/Diagram.js', 'Diagram'))
       .then(() => ensureGlobalScript(tabId, 'src/extensionHelpers.js', 'AsusRouterHelpers'))
-      .then(() => ensureGlobalScript(tabId, 'src/clientData.js', 'AsusRouterClientData'))
-      .then(() => ensureGlobalScript(tabId, 'src/clientsTemplates.js', 'AsusRouterClientsTemplates'))
-      .then(() => ensureGlobalScript(tabId, 'src/clientsStyles.js', 'AsusRouterClientsStyles'))
-      .then(() => ensureGlobalScript(tabId, 'src/clientsUi.js', 'AsusRouterClientsUi'))
-      .then(() => ensureGlobalScript(tabId, 'src/clientsModule.js', 'AsusRouterClientsModule'))
-      .then(() => executeJSScript(tabId, script))
+      .then(() => ensureGlobalScript(tabId, 'src/modules/clients/shared/moduleRegistry.js', 'AsusRouterClientsModule'))
+      .then(() => ensureGlobalScript(tabId, 'src/modules/clients/data/clientDataStore.js', 'AsusRouterClientData'))
+      .then(() => ensureGlobalScript(tabId, 'src/modules/clients/templates/clientsTemplates.js', 'AsusRouterClientsTemplates'))
+      .then(() => ensureGlobalScript(tabId, 'src/modules/clients/styles/clientsStyles.js', 'AsusRouterClientsStyles'))
+      .then(() => ensureGlobalScript(tabId, 'src/modules/clients/ui/clientsUi.js', 'AsusRouterClientsUi'))
+      .then(() => executeJSScript(tabId, script === 'src/clients.js' ? 'src/modules/clients/controller/clientsController.js' : script))
       .then(() => window.close());
   });
 }
@@ -39,7 +39,7 @@ function onButtonClick(event) {
 function insertCSS(tabId) {
   return chrome.scripting.insertCSS({
     target: { tabId },
-    files: ['src/bootstrap.css'],
+    files: ['src/bootstrap.css', 'src/modules/clients/styles/clients.css'],
   });
 }
 

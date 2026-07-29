@@ -21,7 +21,7 @@
     if (text.length <= maxLength) return escapeHtml(text);
 
     const safeText = escapeHtml(text);
-    return `<span title="${safeText}" style="display:inline-block;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle;">${safeText}</span>`;
+    return `<span class="clients-truncated-text" title="${safeText}">${safeText}</span>`;
   }
 
   return {

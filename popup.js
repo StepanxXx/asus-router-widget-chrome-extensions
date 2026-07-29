@@ -1,43 +1,46 @@
 
 const buttonDiv = document.getElementById('btnGroup');
-const buttonScripts = {
-  clients: "src/clients.js",
-  networks: "src/networks.js"
-};
+const buttonScripts = [
+  { name: 'clients', file: 'src/clients.js' },
+  { name: 'networks', file: 'src/networks.js' }
+];
 
 createScriptButtons(buttonScripts);
 
 function createScriptButtons(buttonScripts) {
-  for(item in buttonScripts) {
+  buttonScripts.forEach(({ name, file }) => {
     const button = document.createElement('button');
-    button.innerText = item;
-    button.setAttribute('value', buttonScripts[item]);
+    button.innerText = name;
+    button.setAttribute('value', file);
     button.addEventListener('click', onButtonClick);
     buttonDiv.appendChild(button);
-  };
-};
+  });
+}
 
 function onButtonClick(event) {
-  const script = event.target.value;
+  const script = event.currentTarget.value;
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    insertCSS(tabs[0].id)
-    .then(() => executeJSScript(tabs[0].id, "src/Diagram.js"))
-    .then(() => executeJSScript(tabs[0].id, script))
-    .then(() => window.close())
+    const tabId = tabs[0]?.id;
+    if (!tabId) return;
+
+    insertCSS(tabId)
+      .then(() => executeJSScript(tabId, ['src/Diagram.js', 'src/extensionHelpers.js', script]))
+      .then(() => window.close());
   });
 }
 
-function insertCSS(tab) {
+function insertCSS(tabId) {
   return chrome.scripting.insertCSS({
-    target: { tabId:  tab},
-    files: ["src/bootstrap.css"],
+    target: { tabId },
+    files: ['src/bootstrap.css'],
   });
 }
 
-function executeJSScript(tab, script) {
+function executeJSScript(tabId, script) {
+  const files = Array.isArray(script) ? script : [script];
   return chrome.scripting.executeScript({
-    target: { tabId: tab },
-    files: [script]
+    target: { tabId },
+    files
   });
 }
 

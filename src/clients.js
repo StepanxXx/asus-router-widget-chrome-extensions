@@ -383,6 +383,7 @@
             case col === "rssi" && isOnlineWifi:    return td.innerHTML = getWifiRssiView(value);
             case col === "rssi" && isOnlineEthernet:    return td.innerHTML = getRssiEthernetView(value);
             case col === "internetState":           return td.innerHTML = getInternetState(value);
+            case col === "nickName":                return td.innerHTML = getTruncatedValue(value, 24);
             default:                                return td.innerHTML = value;
         }
     /*
@@ -391,6 +392,10 @@ Tx Rate: 408.3
 Rx Rate: 6
 Час доступу: 00:14:04"></div>
     */
+    }
+
+    function getTruncatedValue(value, maxLength = 24) {
+        return AsusRouterHelpers.truncateText(value, maxLength);
     }
 
     function getWifiRssiView(value) {

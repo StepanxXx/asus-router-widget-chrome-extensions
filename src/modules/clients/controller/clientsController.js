@@ -11,8 +11,17 @@
     inrevalSec: 2,
     viwe: {
       intervalCode: null,
+      renderCount: 0,
+      renderLimit: 4,
       container: null,
       setViwe: () => {
+
+        /*Region*/ 
+        // лише 4 рази відбражати, а решту разів не відображати
+        config.viwe.renderCount++;
+        if (config.viwe.renderCount > config.viwe.renderLimit) return;
+        /*endregion*/ 
+
         let obj = transformData();
         if (obj == null) return;
         obj = Object.entries(obj)

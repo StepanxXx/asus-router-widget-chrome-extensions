@@ -117,7 +117,7 @@
     addHead(dialog, config.title);
 
     const container = document.createElement('div');
-    container.className = 'clients-modal-body';
+    container.className = 'clients-modal-body font-monospace';
     dialog.appendChild(container);
     dialog.className = styles.modal;
     container.innerHTML = '<div class="clients-loading">Loading clients…</div>';

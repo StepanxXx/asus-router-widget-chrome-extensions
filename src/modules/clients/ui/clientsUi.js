@@ -94,7 +94,7 @@
       const switchCheckbox = getCheckbox(isOnline ? 1 : 0);
       const switchWrapper = getCheckboxWrapper(switchCheckbox, isOnline);
       return `${getTitleView(item.name, item)}
-      <div class="clients-connection-card ${stateClass}" title="${title}">
+      <div class="clients-connection-card ${stateClass} type${value}" title="${title}">
         ${getConectionTypeView(item.isWL, item)}
         ${rssi}
         ${switchWrapper}

@@ -6,6 +6,7 @@
   }
 
   root.AsusRouterHelpers = api;
+  root.AsusRouterHelpers = api;
 }(typeof globalThis !== "undefined" ? globalThis : this, function () {
   function escapeHtml(value = "") {
     return String(value)

@@ -24,7 +24,10 @@ function onButtonClick(event) {
     if (!tabId) return;
 
     insertCSS(tabId)
-      .then(() => executeJSScript(tabId, ['src/Diagram.js', 'src/extensionHelpers.js', script]))
+      .then(() => ensureGlobalScript(tabId, 'src/Diagram.js', 'Diagram'))
+      .then(() => ensureGlobalScript(tabId, 'src/extensionHelpers.js', 'AsusRouterHelpers'))
+      .then(() => ensureGlobalScript(tabId, 'src/clientData.js', 'AsusRouterClientData'))
+      .then(() => executeJSScript(tabId, script))
       .then(() => window.close());
   });
 }
@@ -36,11 +39,25 @@ function insertCSS(tabId) {
   });
 }
 
-function executeJSScript(tabId, script) {
-  const files = Array.isArray(script) ? script : [script];
+function ensureGlobalScript(tabId, file, globalName) {
   return chrome.scripting.executeScript({
     target: { tabId },
-    files
+    func: (name) => typeof globalThis[name] !== 'undefined',
+    args: [globalName],
+  }).then((results) => {
+    const alreadyLoaded = results?.[0]?.result;
+    if (alreadyLoaded) return null;
+    return chrome.scripting.executeScript({
+      target: { tabId },
+      files: [file],
+    });
+  });
+}
+
+function executeJSScript(tabId, script) {
+  return chrome.scripting.executeScript({
+    target: { tabId },
+    files: [script],
   });
 }
 

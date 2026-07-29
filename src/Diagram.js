@@ -81,3 +81,5 @@ class Diagram {
     };
 
 }
+
+globalThis.Diagram = Diagram;

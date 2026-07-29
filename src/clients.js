@@ -1,4 +1,5 @@
 (function () {
+    const clientDataStore = AsusRouterClientData.createClientDataStore();
     const config = {
         id: "clientsModal",
         title: "Clients",
@@ -28,54 +29,19 @@
         entity: {
             client:{
                 intervalCode: null,
-                getRequest: () => [`${window.location.origin}/update_clients.asp?_=${new Date() * 1}`, {
-                    "headers": {
-                        "accept": "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*; q=0.01"
-                    },
-                    "method": "GET",
-                }],
                 data: null,
-                getData: () => fetch(...config.entity.client.getRequest())
-                    .then(response => response.text())
-                    .then(response => response.replace(/networkmap_fullscan.*/smgi, ""))
-                    .then(response => response
-                                        .replace(/networkmap_fullscan.*/ismg, "")
-                                        .replace(/.*originData = /ismg, "")
-                                        .replace('fromNetworkmapd', '"fromNetworkmapd"')
-                                        .replace('nmpClient', '"nmpClient"')
-                    ).then(JSON.parse)
-                    .then(response => config.entity.client.data = response.fromNetworkmapd[0])
-                    /*.then(res => {
-                        const obj = [];
-                        for (const key in res) obj.push(res[key].nickName || res[key].name);
-                        return obj;
-                    })
-                    .then(console.log)*/,
+                getData: () => clientDataStore.fetchClientData(window.location.origin)
+                    .then(response => { config.entity.client.data = response; return response; }),
             },
             traffic:{
                 intervalCode: null,
-                getRequest:() => [`${window.location.origin}/getTraffic.asp?_=${new Date() * 1}`, {
-                    "headers": {
-                        "accept": "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*; q=0.01"
-                    },
-                    "method": "GET",
-                }],
                 data: null,
                 prevData: null,
                 log: null,
                 max: null,
                 min: null,
-                getData: () => fetch(...config.entity.traffic.getRequest())
-                    .then(response => response.text())
-                    .then(response => response
-                                        .replace(/.* new Array\(\);/ismg, "")
-                                        .replace('array_traffic = ', '{"array_traffic":')
-                                        .replace('router_traffic = ', '"router_traffic":')
-                                        .replace(";", ",")
-                                        .replace(";", "}")
-                    ).then(JSON.parse)
-                    .then(result => config.entity.traffic.data = result)
-                    .then(result => result.stamp = new Date()*1)
+                getData: () => clientDataStore.fetchTrafficData(window.location.origin)
+                    .then(response => { config.entity.traffic.data = response; return response; }),
             }
         },
         colsHideName:[
@@ -223,71 +189,15 @@
     initModal ();
  
     function transformData() {
-        const client = config.entity.client.data;
-        const traffic = config.entity.traffic.data;
-        if (client == null || traffic == null) return null;
-        const obj = {};
-        const prevTraffic = config.entity.traffic.prevData;
-        const log = config.entity.traffic.log ? config.entity.traffic.log : {};
-        const curtTraffic = {};
-        curtTraffic.stamp = traffic.stamp;
-        for (item in client) {
-            if(["maclist", "ClientAPILevel"].includes(item) ) continue;
-            const data = getTrafic(traffic, prevTraffic, item);
-            for (const key in client[item]) data[key] = client[item][key];
-            curtTraffic[item] = {inc: data.inc, out: data.out};
-            setNewLog(data, log, traffic, item);
-            data.log = log[item];
-            obj[item] = data;        
-        }
-        config.entity.traffic.log = log;
-        config.entity.traffic.prevData = curtTraffic;
+        const state = clientDataStore.transformData();
+        if (state == null) return null;
 
-        setTrafficMaxMin(log);
+        config.entity.traffic.max = state.max;
+        config.entity.traffic.min = state.min;
+        config.entity.traffic.log = state.log;
+        config.entity.traffic.prevData = state.prevData;
 
-        return obj;
-    }  
-
-    function setNewLog(data, log, traffic, item) {
-        let result = log[item] ? log[item] : [];
-        if (data.isOnline === "0") return log[item] = [];
-        const [speedInc, speedOut] = [data.speedInc, data.speedOut];
-        if (speedInc !== undefined && speedOut !== undefined)
-            result.push({ inc: speedInc, out: speedOut, stamp: traffic.stamp});
-        const logLength = result.length;
-        if (logLength > 30) result = result.slice(logLength - 30, logLength);
-        log[item] = result;
-    }
-
-    function setTrafficMaxMin(log) {
-        let max = null;
-        let min = null;
-        for (item in log) {
-            max = Math.max(max, ...log[item].map(i => (i.out && i.out > 0) ? i.out : 0));
-            max = Math.max(max, ...log[item].map(i => (i.inc && i.inc > 0) ? i.inc : 0));
-            min = Math.min(min, ...log[item].map(i => (i.out && i.out > 0) ? i.out : 0));
-            min = Math.min(min, ...log[item].map(i => (i.inc && i.inc > 0) ? i.inc : 0));
-        }
-        config.entity.traffic.max = max ? max : 0;
-        config.entity.traffic.min = min ? min : 0;
-    }
-
-    function getTrafic(traffic, prevTraffic, item) {
-        itemTraffic = traffic.array_traffic.filter(arr => arr[0] == item);
-        const [ , out, inc]  = itemTraffic[0] ? itemTraffic[0] : new Array(3);
-        
-        const {inc: incPrev, out: outPrev} = (
-                prevTraffic !== null && Object.hasOwnProperty.call(prevTraffic, item)
-            ) ? prevTraffic[item]
-            : {};
-        
-        const [speedInc, speedOut] = ![incPrev, outPrev, inc, out].includes(undefined)
-                ? [
-                    (inc - incPrev) / ((traffic.stamp - prevTraffic.stamp) / 1000),
-                    (out - outPrev) / ((traffic.stamp - prevTraffic.stamp) / 1000)
-                ] : [0, 0];
-
-        return { inc, out, speedInc,  speedOut };
+        return state.obj;
     }
 
 

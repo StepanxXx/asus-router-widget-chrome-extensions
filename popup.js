@@ -1,8 +1,8 @@
 
 const buttonDiv = document.getElementById('btnGroup');
 const buttonScripts = [
-  { name: 'clients', file: 'src/clients.js' },
-  { name: 'networks', file: 'src/networks.js' }
+  { name: 'clients', file: 'src/modules/clients/controller/clientsController.js' },
+  { name: 'networks', file: 'src/modules/networks/controller/networksController.js' }
 ];
 
 createScriptButtons(buttonScripts);
@@ -26,12 +26,14 @@ function onButtonClick(event) {
     insertCSS(tabId)
       .then(() => ensureGlobalScript(tabId, 'src/Diagram.js', 'Diagram'))
       .then(() => ensureGlobalScript(tabId, 'src/extensionHelpers.js', 'AsusRouterHelpers'))
-      .then(() => ensureGlobalScript(tabId, 'src/modules/clients/shared/moduleRegistry.js', 'AsusRouterClientsModule'))
       .then(() => ensureGlobalScript(tabId, 'src/modules/clients/data/clientDataStore.js', 'AsusRouterClientData'))
       .then(() => ensureGlobalScript(tabId, 'src/modules/clients/templates/clientsTemplates.js', 'AsusRouterClientsTemplates'))
       .then(() => ensureGlobalScript(tabId, 'src/modules/clients/styles/clientsStyles.js', 'AsusRouterClientsStyles'))
       .then(() => ensureGlobalScript(tabId, 'src/modules/clients/ui/clientsUi.js', 'AsusRouterClientsUi'))
-      .then(() => executeJSScript(tabId, script === 'src/clients.js' ? 'src/modules/clients/controller/clientsController.js' : script))
+      .then(() => ensureGlobalScript(tabId, 'src/modules/networks/data/networkDataStore.js', 'AsusRouterNetworksData'))
+      .then(() => ensureGlobalScript(tabId, 'src/modules/networks/styles/networksStyles.js', 'AsusRouterNetworksStyles'))
+      .then(() => ensureGlobalScript(tabId, 'src/modules/networks/ui/networksUi.js', 'AsusRouterNetworksUi'))
+      .then(() => executeJSScript(tabId, script))
       .then(() => window.close());
   });
 }
@@ -39,7 +41,7 @@ function onButtonClick(event) {
 function insertCSS(tabId) {
   return chrome.scripting.insertCSS({
     target: { tabId },
-    files: ['src/bootstrap.css', 'src/modules/clients/styles/clients.css'],
+    files: ['src/bootstrap.css', 'src/modules/clients/styles/clients.css', 'src/modules/networks/styles/networks.css'],
   });
 }
 

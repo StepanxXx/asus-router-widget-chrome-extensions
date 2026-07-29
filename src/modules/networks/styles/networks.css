@@ -1,0 +1,97 @@
+.networks-modal {
+  max-width: min(95vw, 1100px);
+  width: min(95vw, 1100px);
+  padding: 1rem;
+  background: #111827;
+  color: #f9fafb;
+  border: 2px solid #4b5563;
+  border-radius: 0.75rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+}
+
+.networks-modal::backdrop {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.networks-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #111827;
+  padding: 0.25rem 0;
+}
+
+.networks-header-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.networks-header-actions {
+  text-align: right;
+}
+
+.networks-table {
+  width: 100%;
+  font-size: 0.85rem;
+  color: #f9fafb;
+  border-collapse: collapse;
+}
+
+.networks-table td,
+.networks-table th {
+  padding: 0.4rem 0.4rem;
+  vertical-align: middle;
+}
+
+.networks-total-cell {
+  text-align: end;
+  font-weight: 600;
+}
+
+.networks-title-cell {
+  text-align: left;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.networks-metric-cell {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.networks-diagram-cell {
+  text-align: center;
+  width: 170px;
+}
+
+.networks-vector {
+  font-weight: 700;
+  margin-left: 0.2rem;
+}
+
+.networks-vector--positive {
+  color: #22c55e;
+}
+
+.networks-vector--negative {
+  color: #ef4444;
+}
+
+.networks-close-button {
+  background: transparent;
+  border: 0;
+  color: #f9fafb;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.btn-close.networks-close-button {
+  --bs-btn-close-color: #fff;
+  filter: var(--bs-btn-close-white-filter);
+}

@@ -1,6 +1,6 @@
 .clients-modal {
-  max-width: min(95vw, 1200px);
-  width: min(95vw, 1200px);
+  max-width: min(95vw, 1600px);
+  min-width: 50px;
   padding: 0;
   background: #111827;
   color: #f9fafb;
@@ -23,6 +23,7 @@
 
 .btn-close.clients-close-button {
   --bs-btn-close-color: #fff;
+  filter: var(--bs-btn-close-white-filter);
 }
 
 .clients-header-title {
@@ -42,7 +43,6 @@
 }
 
 .clients-table {
-  anchor-name: --my-anchor
   width: 100%;
   font-size: 0.85rem;
   color: #f9fafb;
@@ -199,7 +199,7 @@
 
 .clients-state-badge {
   font-weight: 700;
-  text-align: end;
+  text-align:start;
 }
 
 .clients-state-badge.is-danger {

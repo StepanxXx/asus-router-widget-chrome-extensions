@@ -13,6 +13,7 @@
 - [x] Ізолювати стилі та видалити legacy runtime.
 - [x] Додати component tests.
 - [x] Додати ESLint, Prettier і перевірку форматування.
+- [x] Покрити тестами RSSI, форматування, HTTP-помилки та cleanup polling.
 - [ ] Завершити ручний smoke test у Chrome на реальному роутері.
 
 ## 1. Поточний стан

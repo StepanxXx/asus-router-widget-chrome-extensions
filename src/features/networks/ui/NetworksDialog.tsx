@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { formatMegabitsPerSecond, formatMegabytes } from '../../../shared/formatTraffic';
 import { networkTypes, type NetworkType } from '../model/networkConfig';
 import type { NetworkTrafficState, TrafficVector } from '../model/types';
 import { useNetworkTraffic } from '../hooks/useNetworkTraffic';
@@ -7,18 +8,6 @@ import { TrafficChart } from './TrafficChart';
 type NetworksDialogProps = {
   onClose: () => void;
 };
-
-function formatMegabitsPerSecond(value = 0): string {
-  return `${Math.max(0, (value / 1024 / 1024) * 8).toLocaleString(undefined, {
-    maximumFractionDigits: 2,
-  })} Mbps`;
-}
-
-function formatMegabytes(value = 0): string {
-  return `${Math.max(0, value / 1024 / 1024).toLocaleString(undefined, {
-    maximumFractionDigits: 0,
-  })} MB`;
-}
 
 function Direction({ vector }: { vector: TrafficVector }) {
   return (

@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { useClientsTraffic } from '../hooks/useClientsTraffic';
+import { getRssiLabel } from '../model/signalStrength';
 import type { ClientTrafficState, ClientView } from '../model/types';
+import { formatMegabitsPerSecond, formatMegabytes } from '../../../shared/formatTraffic';
 import { ClientTrafficChart } from './ClientTrafficChart';
 
 type ClientsDialogProps = {
@@ -26,18 +28,6 @@ const connectionNames: Record<string, string> = {
   '3': '5 GHz - 2',
   '4': '6 GHz',
 };
-
-function formatMegabitsPerSecond(value = 0): string {
-  return `${Math.max(0, (value / 1024 / 1024) * 8).toLocaleString(undefined, {
-    maximumFractionDigits: 2,
-  })} Mbps`;
-}
-
-function formatMegabytes(value = 0): string {
-  return `${Math.max(0, value / 1024 / 1024).toLocaleString(undefined, {
-    maximumFractionDigits: 0,
-  })} MB`;
-}
 
 function displayValue(value: unknown): string {
   if (value === null || value === undefined || value === '') return '—';
@@ -90,15 +80,6 @@ function LinkRate({ direction, value }: { direction: 'rx' | 'tx'; value: unknown
       <span>{displayValue(value)}</span>
     </span>
   );
-}
-
-function getRssiLabel(value: unknown): string {
-  const rssi = Number.parseInt(String(value), 10);
-  if (!Number.isFinite(rssi)) return 'Unknown signal';
-  if (rssi >= -50) return 'Very strong';
-  if (rssi >= -67) return 'Strong';
-  if (rssi >= -80) return 'Fair';
-  return 'Weak';
 }
 
 function ClientHeader({ client }: { client: ClientView }) {

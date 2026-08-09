@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { normalizeNetworkResponse, parseNetworkResponse } from './networkApi';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { fetchNetworkSnapshot, normalizeNetworkResponse, parseNetworkResponse } from './networkApi';
 
 const routerResponse = `netdev = {
 'INTERNET':{rx:100,tx:200},
@@ -7,6 +7,10 @@ const routerResponse = `netdev = {
 }`;
 
 describe('network API parser', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it('normalizes the JavaScript-like ASUS response', () => {
     expect(JSON.parse(normalizeNetworkResponse(routerResponse))).toEqual({
       INTERNET0: { rx: '100', tx: '200' },
@@ -30,5 +34,13 @@ describe('network API parser', () => {
 }`;
 
     expect(() => parseNetworkResponse(invalidResponse)).toThrow();
+  });
+
+  it('reports an HTTP failure before parsing the response', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 503 }));
+
+    await expect(fetchNetworkSnapshot('http://router.test')).rejects.toThrow(
+      'Network request failed with status 503',
+    );
   });
 });

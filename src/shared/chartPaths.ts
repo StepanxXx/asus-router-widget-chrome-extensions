@@ -21,12 +21,7 @@ export function createSmoothChartPath(
   max: number,
   options: SmoothChartOptions = {},
 ): SmoothChartPath {
-  const {
-    width = 150,
-    height = 50,
-    maxPoints = 30,
-    controlOffset = 5,
-  } = options;
+  const { width = 150, height = 50, maxPoints = 30, controlOffset = 5 } = options;
 
   if (samples.length === 0) return { area: '', line: '' };
 

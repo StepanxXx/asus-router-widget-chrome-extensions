@@ -44,9 +44,10 @@ export function transformClientData(
     const speedInc = calculateSpeed(currentCounters.inc, previousCounters?.inc, elapsedSeconds);
     const speedOut = calculateSpeed(currentCounters.out, previousCounters?.out, elapsedSeconds);
     const sample = { inc: speedInc, out: speedOut, stamp: trafficSnapshot.stamp };
-    const clientHistory = client.isOnline === '0'
-      ? []
-      : [...(previous?.history[clientId] ?? []), sample].slice(-historyLimit);
+    const clientHistory =
+      client.isOnline === '0'
+        ? []
+        : [...(previous?.history[clientId] ?? []), sample].slice(-historyLimit);
 
     counters[clientId] = currentCounters;
     history[clientId] = clientHistory;

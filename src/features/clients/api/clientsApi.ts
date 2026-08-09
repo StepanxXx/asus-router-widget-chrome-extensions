@@ -5,11 +5,9 @@ const clientResponseSchema = z.object({
   fromNetworkmapd: z.array(z.record(z.string(), z.unknown())).min(1),
 });
 
-const trafficTupleSchema = z.tuple([
-  z.string(),
-  z.coerce.number().finite(),
-  z.coerce.number().finite(),
-]).rest(z.unknown());
+const trafficTupleSchema = z
+  .tuple([z.string(), z.coerce.number().finite(), z.coerce.number().finite()])
+  .rest(z.unknown());
 
 const trafficResponseSchema = z.object({
   array_traffic: z.array(trafficTupleSchema),
@@ -17,13 +15,14 @@ const trafficResponseSchema = z.object({
 });
 
 const requestHeaders = {
-  accept: 'text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*; q=0.01',
+  accept:
+    'text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*; q=0.01',
 };
 
 export function normalizeClientsResponse(responseText: string): string {
   return responseText
-    .replace(/networkmap_fullscan.*/smgi, '')
-    .replace(/.*originData = /ismg, '')
+    .replace(/networkmap_fullscan.*/gims, '')
+    .replace(/.*originData = /gims, '')
     .replace('fromNetworkmapd', '"fromNetworkmapd"')
     .replace('nmpClient', '"nmpClient"');
 }
@@ -45,7 +44,7 @@ export function parseClientsResponse(responseText: string): ClientMap {
 
 export function normalizeClientTrafficResponse(responseText: string): string {
   return responseText
-    .replace(/.* new Array\(\);/ismg, '')
+    .replace(/.* new Array\(\);/gims, '')
     .replace('array_traffic = ', '{"array_traffic":')
     .replace('router_traffic = ', '"router_traffic":')
     .replace(';', ',')

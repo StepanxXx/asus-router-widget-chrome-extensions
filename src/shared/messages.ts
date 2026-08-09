@@ -7,9 +7,7 @@ export type OpenFeatureMessage = {
 
 export type ExtensionMessage = OpenFeatureMessage;
 
-export type ExtensionResponse =
-  | { ok: true }
-  | { ok: false; error: string };
+export type ExtensionResponse = { ok: true } | { ok: false; error: string };
 
 export function isOpenFeatureMessage(message: unknown): message is OpenFeatureMessage {
   if (!message || typeof message !== 'object') return false;

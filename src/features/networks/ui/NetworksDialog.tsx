@@ -9,7 +9,7 @@ type NetworksDialogProps = {
 };
 
 function formatMegabitsPerSecond(value = 0): string {
-  return `${Math.max(0, value / 1024 / 1024 * 8).toLocaleString(undefined, {
+  return `${Math.max(0, (value / 1024 / 1024) * 8).toLocaleString(undefined, {
     maximumFractionDigits: 2,
   })} Mbps`;
 }
@@ -22,7 +22,10 @@ function formatMegabytes(value = 0): string {
 
 function Direction({ vector }: { vector: TrafficVector }) {
   return (
-    <span className={`networks-vector networks-vector--${vector}`} aria-label={vector === 'inc' ? 'incoming' : 'outgoing'}>
+    <span
+      className={`networks-vector networks-vector--${vector}`}
+      aria-label={vector === 'inc' ? 'incoming' : 'outgoing'}
+    >
       {vector === 'inc' ? '▼' : '▲'}
     </span>
   );
@@ -78,13 +81,20 @@ export function NetworksDialog({ onClose }: NetworksDialogProps) {
     <dialog ref={dialogRef} className="networks-modal" onClose={onClose} onCancel={onClose}>
       <header className="networks-header">
         <h2>Network total / speed</h2>
-        <button className="networks-close" type="button" aria-label="Close" onClick={() => dialogRef.current?.close()}>
+        <button
+          className="networks-close"
+          type="button"
+          aria-label="Close"
+          onClick={() => dialogRef.current?.close()}
+        >
           ×
         </button>
       </header>
       <div className="networks-content">
         {query.isPending && <p className="networks-status">Loading…</p>}
-        {query.isError && <p className="networks-status networks-status--error">{query.error.message}</p>}
+        {query.isError && (
+          <p className="networks-status networks-status--error">{query.error.message}</p>
+        )}
         {query.data && (
           <table className="networks-table">
             <NetworkRows state={query.data} />

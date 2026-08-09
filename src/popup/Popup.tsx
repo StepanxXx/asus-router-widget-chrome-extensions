@@ -6,10 +6,7 @@ type ScriptButton = {
   name: Feature;
 };
 
-const buttonScripts: ScriptButton[] = [
-  { name: 'clients' },
-  { name: 'networks' },
-];
+const buttonScripts: ScriptButton[] = [{ name: 'clients' }, { name: 'networks' }];
 
 async function getActiveTabId(): Promise<number> {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -30,7 +27,10 @@ async function openFeature(feature: Feature): Promise<void> {
   });
 
   const message: OpenFeatureMessage = { type: 'open-feature', feature };
-  const response = await chrome.tabs.sendMessage<OpenFeatureMessage, ExtensionResponse>(tabId, message);
+  const response = await chrome.tabs.sendMessage<OpenFeatureMessage, ExtensionResponse>(
+    tabId,
+    message,
+  );
 
   if (!response.ok) throw new Error(response.error);
 }

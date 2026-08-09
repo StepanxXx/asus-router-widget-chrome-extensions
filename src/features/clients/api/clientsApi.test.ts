@@ -22,7 +22,9 @@ describe('clients API parser', () => {
   });
 
   it('normalizes traffic data and maps tuple directions', () => {
-    expect(JSON.parse(normalizeClientTrafficResponse(trafficResponse))).toHaveProperty('array_traffic');
+    expect(JSON.parse(normalizeClientTrafficResponse(trafficResponse))).toHaveProperty(
+      'array_traffic',
+    );
     expect(parseClientTrafficResponse(trafficResponse, 1234)).toEqual({
       stamp: 1234,
       traffic: {

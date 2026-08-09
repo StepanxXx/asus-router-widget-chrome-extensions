@@ -28,7 +28,7 @@ const connectionNames: Record<string, string> = {
 };
 
 function formatMegabitsPerSecond(value = 0): string {
-  return `${Math.max(0, value / 1024 / 1024 * 8).toLocaleString(undefined, {
+  return `${Math.max(0, (value / 1024 / 1024) * 8).toLocaleString(undefined, {
     maximumFractionDigits: 2,
   })} Mbps`;
 }
@@ -108,7 +108,9 @@ function ClientHeader({ client }: { client: ClientView }) {
 
   return (
     <div className={`clients-card ${online ? 'is-online' : 'is-offline'}`}>
-      <strong className="clients-card-name" title={name}>{name}</strong>
+      <strong className="clients-card-name" title={name}>
+        {name}
+      </strong>
       <span>{connection}</span>
       {client.isWL !== '0' && online && (
         <span title={getRssiLabel(client.rssi)}>RSSI {displayValue(client.rssi)}</span>
@@ -136,19 +138,31 @@ function ClientsTable({ state }: { state: ClientTrafficState }) {
     <table className="clients-table">
       <tbody>
         <tr>
-          <th className="clients-title-cell" scope="row">Client</th>
-          {clients.map(([id, client]) => <td key={id}><ClientHeader client={client} /></td>)}
-        </tr>
-        <tr>
           <th className="clients-title-cell" scope="row">
-            Traffic peak<br />{formatMegabitsPerSecond(state.max)}
+            Client
           </th>
           {clients.map(([id, client]) => (
-            <td key={id}><ClientTrafficChart samples={client.log} max={state.max} /></td>
+            <td key={id}>
+              <ClientHeader client={client} />
+            </td>
           ))}
         </tr>
         <tr>
-          <th className="clients-title-cell" scope="row">Speed ↓</th>
+          <th className="clients-title-cell" scope="row">
+            Traffic peak
+            <br />
+            {formatMegabitsPerSecond(state.max)}
+          </th>
+          {clients.map(([id, client]) => (
+            <td key={id}>
+              <ClientTrafficChart samples={client.log} max={state.max} />
+            </td>
+          ))}
+        </tr>
+        <tr>
+          <th className="clients-title-cell" scope="row">
+            Speed ↓
+          </th>
           {clients.map(([id, client]) => (
             <td key={id}>
               {formatMegabitsPerSecond(client.speedInc)} <TrafficDirection direction="download" />
@@ -156,7 +170,9 @@ function ClientsTable({ state }: { state: ClientTrafficState }) {
           ))}
         </tr>
         <tr>
-          <th className="clients-title-cell" scope="row">Speed ↑</th>
+          <th className="clients-title-cell" scope="row">
+            Speed ↑
+          </th>
           {clients.map(([id, client]) => (
             <td key={id}>
               {formatMegabitsPerSecond(client.speedOut)} <TrafficDirection direction="upload" />
@@ -164,7 +180,9 @@ function ClientsTable({ state }: { state: ClientTrafficState }) {
           ))}
         </tr>
         <tr>
-          <th className="clients-title-cell" scope="row">Total ↓</th>
+          <th className="clients-title-cell" scope="row">
+            Total ↓
+          </th>
           {clients.map(([id, client]) => (
             <td key={id}>
               {formatMegabytes(client.inc)} <TrafficDirection direction="download" />
@@ -172,7 +190,9 @@ function ClientsTable({ state }: { state: ClientTrafficState }) {
           ))}
         </tr>
         <tr>
-          <th className="clients-title-cell" scope="row">Total ↑</th>
+          <th className="clients-title-cell" scope="row">
+            Total ↑
+          </th>
           {clients.map(([id, client]) => (
             <td key={id}>
               {formatMegabytes(client.out)} <TrafficDirection direction="upload" />
@@ -180,27 +200,45 @@ function ClientsTable({ state }: { state: ClientTrafficState }) {
           ))}
         </tr>
         <tr>
-          <th className="clients-title-cell" scope="row">Logged in</th>
+          <th className="clients-title-cell" scope="row">
+            Logged in
+          </th>
           {clients.map(([id, client]) => (
-            <td key={id}><LoginStatus loggedIn={client.isLogin === '1'} /></td>
+            <td key={id}>
+              <LoginStatus loggedIn={client.isLogin === '1'} />
+            </td>
           ))}
         </tr>
         <tr>
-          <th className="clients-title-cell" scope="row">curRx</th>
+          <th className="clients-title-cell" scope="row">
+            curRx
+          </th>
           {clients.map(([id, client]) => (
-            <td key={id}><LinkRate direction="rx" value={client.curRx} /></td>
+            <td key={id}>
+              <LinkRate direction="rx" value={client.curRx} />
+            </td>
           ))}
         </tr>
         <tr>
-          <th className="clients-title-cell" scope="row">curTx</th>
+          <th className="clients-title-cell" scope="row">
+            curTx
+          </th>
           {clients.map(([id, client]) => (
-            <td key={id}><LinkRate direction="tx" value={client.curTx} /></td>
+            <td key={id}>
+              <LinkRate direction="tx" value={client.curTx} />
+            </td>
           ))}
         </tr>
         {detailRows.map((field) => (
           <tr key={field}>
-            <th className="clients-title-cell" scope="row">{field}</th>
-            {clients.map(([id, client]) => <td key={id} title={displayValue(client[field])}>{displayValue(client[field])}</td>)}
+            <th className="clients-title-cell" scope="row">
+              {field}
+            </th>
+            {clients.map(([id, client]) => (
+              <td key={id} title={displayValue(client[field])}>
+                {displayValue(client[field])}
+              </td>
+            ))}
           </tr>
         ))}
       </tbody>
@@ -221,17 +259,26 @@ export function ClientsDialog({ onClose }: ClientsDialogProps) {
     <dialog ref={dialogRef} className="clients-modal" onClose={onClose} onCancel={onClose}>
       <header className="clients-header">
         <h2>Clients</h2>
-        <button className="clients-close" type="button" aria-label="Close" onClick={() => dialogRef.current?.close()}>
+        <button
+          className="clients-close"
+          type="button"
+          aria-label="Close"
+          onClick={() => dialogRef.current?.close()}
+        >
           ×
         </button>
       </header>
       <div className="clients-content">
         {query.isPending && <p className="clients-status">Loading clients…</p>}
-        {query.isError && <p className="clients-status clients-status--error">{query.error.message}</p>}
+        {query.isError && (
+          <p className="clients-status clients-status--error">{query.error.message}</p>
+        )}
         {query.data && Object.keys(query.data.clients).length === 0 && (
           <p className="clients-status">No clients found.</p>
         )}
-        {query.data && Object.keys(query.data.clients).length > 0 && <ClientsTable state={query.data} />}
+        {query.data && Object.keys(query.data.clients).length > 0 && (
+          <ClientsTable state={query.data} />
+        )}
       </div>
     </dialog>
   );

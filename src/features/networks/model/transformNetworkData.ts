@@ -38,7 +38,6 @@ export function transformNetworkData(
     if (!counters) continue;
 
     const rxDirection = getDirection(network, 'rx');
-    const txDirection = getDirection(network, 'tx');
     const total = {
       inc: rxDirection === 'inc' ? counters.rx : counters.tx,
       out: rxDirection === 'out' ? counters.rx : counters.tx,

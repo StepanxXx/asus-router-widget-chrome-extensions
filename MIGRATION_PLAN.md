@@ -12,6 +12,7 @@
 - [x] Перенести Clients на React.
 - [x] Ізолювати стилі та видалити legacy runtime.
 - [x] Додати component tests.
+- [x] Додати ESLint, Prettier і перевірку форматування.
 - [ ] Завершити ручний smoke test у Chrome на реальному роутері.
 
 ## 1. Поточний стан

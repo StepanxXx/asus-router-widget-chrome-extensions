@@ -1,7 +1,4 @@
-import {
-  isOpenFeatureMessage,
-  type ExtensionResponse,
-} from '../shared/messages';
+import { isOpenFeatureMessage, type ExtensionResponse } from '../shared/messages';
 import { mountNetworks, unmountNetworks } from '../features/networks/ui/mountNetworks';
 import { mountClients, unmountClients } from '../features/clients/ui/mountClients';
 
@@ -33,7 +30,7 @@ if (!bridgeState.__asusRouterContentBridgeInstalled) {
       sendResponse({ ok: true } satisfies ExtensionResponse);
     } catch (cause) {
       const error = cause instanceof Error ? cause.message : 'Failed to open Clients';
-        sendResponse({ ok: false, error } satisfies ExtensionResponse);
+      sendResponse({ ok: false, error } satisfies ExtensionResponse);
     }
     return false;
   });

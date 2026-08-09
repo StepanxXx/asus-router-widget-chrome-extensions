@@ -1,0 +1,148 @@
+:host {
+  color: #f9fafb;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.clients-modal {
+  width: min(95vw, 1600px);
+  max-height: calc(100vh - 32px);
+  padding: 0;
+  overflow: auto;
+  color: inherit;
+  background: #111827;
+  border: 2px solid #4b5563;
+  border-radius: 12px;
+  box-shadow: 0 15px 35px rgb(0 0 0 / 35%);
+}
+
+.clients-modal::backdrop {
+  background: rgb(0 0 0 / 55%);
+}
+
+.clients-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #111827;
+  border-bottom: 1px solid #374151;
+}
+
+.clients-header h2 {
+  margin: 0;
+  font-size: 17px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.clients-close {
+  padding: 0;
+  color: inherit;
+  font-size: 26px;
+  line-height: 1;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.clients-content {
+  padding: 12px 16px 16px;
+  overflow-x: auto;
+}
+
+.clients-table {
+  min-width: 100%;
+  color: inherit;
+  font-size: 12px;
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+.clients-table th,
+.clients-table td {
+  min-width: 120px;
+  max-width: 180px;
+  padding: 7px;
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-bottom: 1px solid #293548;
+}
+
+.clients-title-cell {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  min-width: 110px !important;
+  color: #d1d5db;
+  font-weight: 600;
+  text-align: left !important;
+  background: #111827;
+}
+
+.clients-card {
+  display: grid;
+  gap: 4px;
+  min-height: 92px;
+  padding: 8px;
+  text-align: left;
+  border: 1px solid #4b5563;
+  border-radius: 8px;
+}
+
+.clients-card.is-online {
+  border-color: #38bdf8;
+}
+
+.clients-card.is-offline {
+  color: #9ca3af;
+}
+
+.clients-card-name {
+  overflow: hidden;
+  color: #f9fafb;
+  text-overflow: ellipsis;
+}
+
+.clients-online-state {
+  color: #38bdf8;
+}
+
+.is-offline .clients-online-state {
+  color: #9ca3af;
+}
+
+.clients-blocked,
+.clients-status--error {
+  color: #f87171;
+}
+
+.clients-chart {
+  display: block;
+  width: 150px;
+  height: 50px;
+}
+
+.clients-chart-line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.clients-chart-line--inc {
+  stroke: #22c55e;
+}
+
+.clients-chart-line--out {
+  stroke: #f87171;
+}
+
+.clients-status {
+  margin: 20px;
+  text-align: center;
+}

@@ -1,5 +1,19 @@
 # План міграції розширення на React + Vite
 
+## Прогрес
+
+- [x] Додано Vite, TypeScript і CRXJS.
+- [x] Popup перенесено на React + TypeScript.
+- [x] Додано типізовані повідомлення, content bridge і service worker.
+- [x] Підготовлено типізований Networks data layer із runtime-валідацією.
+- [x] Додано Vitest і unit-тести Networks data layer.
+- [x] Перенести Networks на React.
+- [x] Підготовлено й протестовано типізований Clients data layer.
+- [x] Перенести Clients на React.
+- [x] Ізолювати стилі та видалити legacy runtime.
+- [x] Додати component tests.
+- [ ] Завершити ручний smoke test у Chrome на реальному роутері.
+
 ## 1. Поточний стан
 
 Розширення використовує Manifest V3, але не має package manager, bundler або системи тестування.

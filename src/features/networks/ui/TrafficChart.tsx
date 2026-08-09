@@ -1,4 +1,5 @@
 import type { TrafficSample } from '../model/types';
+import { createSmoothChartPath } from '../../../shared/chartPaths';
 
 type TrafficChartProps = {
   samples: TrafficSample[];
@@ -7,23 +8,10 @@ type TrafficChartProps = {
 
 const width = 150;
 const height = 50;
-const maxPoints = 30;
-
-function createPoints(samples: TrafficSample[], vector: 'inc' | 'out', max: number): string {
-  const scaleMax = max > 0 ? max : 1;
-  const denominator = Math.max(maxPoints - 1, 1);
-
-  return samples
-    .map((sample, index) => {
-      const x = (index / denominator) * width;
-      const value = Math.max(0, sample[vector]);
-      const y = height - Math.min(height, (value / scaleMax) * height);
-      return `${x},${y}`;
-    })
-    .join(' ');
-}
-
 export function TrafficChart({ samples, max }: TrafficChartProps) {
+  const incoming = createSmoothChartPath(samples, 'inc', max, { width, height });
+  const outgoing = createSmoothChartPath(samples, 'out', max, { width, height });
+
   return (
     <svg
       className="networks-chart"
@@ -31,8 +19,10 @@ export function TrafficChart({ samples, max }: TrafficChartProps) {
       role="img"
       aria-label="Network traffic history"
     >
-      <polyline className="networks-chart-line networks-chart-line--out" points={createPoints(samples, 'out', max)} />
-      <polyline className="networks-chart-line networks-chart-line--inc" points={createPoints(samples, 'inc', max)} />
+      <path className="networks-chart-area networks-chart-area--out" d={outgoing.area} />
+      <path className="networks-chart-area networks-chart-area--inc" d={incoming.area} />
+      <path className="networks-chart-line networks-chart-line--out" d={outgoing.line} />
+      <path className="networks-chart-line networks-chart-line--inc" d={incoming.line} />
     </svg>
   );
 }

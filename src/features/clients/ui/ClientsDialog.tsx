@@ -12,8 +12,6 @@ const detailRows = [
   'nickName',
   'ip',
   'internetMode',
-  'curTx',
-  'curRx',
   'from',
   'vendor',
   'isGN',
@@ -44,6 +42,54 @@ function formatMegabytes(value = 0): string {
 function displayValue(value: unknown): string {
   if (value === null || value === undefined || value === '') return '—';
   return String(value);
+}
+
+function TrafficDirection({ direction }: { direction: 'download' | 'upload' }) {
+  const isDownload = direction === 'download';
+
+  return (
+    <span
+      className={`clients-traffic-direction clients-traffic-direction--${direction}`}
+      aria-label={direction}
+      title={direction}
+    >
+      {isDownload ? '▼' : '▲'}
+    </span>
+  );
+}
+
+function LoginStatus({ loggedIn }: { loggedIn: boolean }) {
+  return (
+    <span
+      className={`clients-login-status ${loggedIn ? 'is-logged-in' : 'is-logged-out'}`}
+      aria-label={loggedIn ? 'Logged in' : 'Not logged in'}
+      title={loggedIn ? 'Logged in' : 'Not logged in'}
+    >
+      <span className="clients-login-status-icon" aria-hidden="true">
+        {loggedIn ? '✓' : '—'}
+      </span>
+      {loggedIn ? 'Yes' : 'No'}
+    </span>
+  );
+}
+
+function LinkRate({ direction, value }: { direction: 'rx' | 'tx'; value: unknown }) {
+  const isRx = direction === 'rx';
+  const label = isRx ? 'Current receive rate' : 'Current transmit rate';
+
+  return (
+    <span
+      className={`clients-link-rate clients-link-rate--${direction}`}
+      aria-label={label}
+      title={label}
+    >
+      <span className="clients-link-rate-icon" aria-hidden="true">
+        {isRx ? '▼' : '▲'}
+      </span>
+      <strong>{direction.toUpperCase()}</strong>
+      <span>{displayValue(value)}</span>
+    </span>
+  );
 }
 
 function getRssiLabel(value: unknown): string {
@@ -103,23 +149,53 @@ function ClientsTable({ state }: { state: ClientTrafficState }) {
         </tr>
         <tr>
           <th className="clients-title-cell" scope="row">Speed ↓</th>
-          {clients.map(([id, client]) => <td key={id}>{formatMegabitsPerSecond(client.speedInc)}</td>)}
+          {clients.map(([id, client]) => (
+            <td key={id}>
+              {formatMegabitsPerSecond(client.speedInc)} <TrafficDirection direction="download" />
+            </td>
+          ))}
         </tr>
         <tr>
           <th className="clients-title-cell" scope="row">Speed ↑</th>
-          {clients.map(([id, client]) => <td key={id}>{formatMegabitsPerSecond(client.speedOut)}</td>)}
+          {clients.map(([id, client]) => (
+            <td key={id}>
+              {formatMegabitsPerSecond(client.speedOut)} <TrafficDirection direction="upload" />
+            </td>
+          ))}
         </tr>
         <tr>
           <th className="clients-title-cell" scope="row">Total ↓</th>
-          {clients.map(([id, client]) => <td key={id}>{formatMegabytes(client.inc)}</td>)}
+          {clients.map(([id, client]) => (
+            <td key={id}>
+              {formatMegabytes(client.inc)} <TrafficDirection direction="download" />
+            </td>
+          ))}
         </tr>
         <tr>
           <th className="clients-title-cell" scope="row">Total ↑</th>
-          {clients.map(([id, client]) => <td key={id}>{formatMegabytes(client.out)}</td>)}
+          {clients.map(([id, client]) => (
+            <td key={id}>
+              {formatMegabytes(client.out)} <TrafficDirection direction="upload" />
+            </td>
+          ))}
         </tr>
         <tr>
           <th className="clients-title-cell" scope="row">Logged in</th>
-          {clients.map(([id, client]) => <td key={id}>{client.isLogin === '1' ? '✓' : '—'}</td>)}
+          {clients.map(([id, client]) => (
+            <td key={id}><LoginStatus loggedIn={client.isLogin === '1'} /></td>
+          ))}
+        </tr>
+        <tr>
+          <th className="clients-title-cell" scope="row">curRx</th>
+          {clients.map(([id, client]) => (
+            <td key={id}><LinkRate direction="rx" value={client.curRx} /></td>
+          ))}
+        </tr>
+        <tr>
+          <th className="clients-title-cell" scope="row">curTx</th>
+          {clients.map(([id, client]) => (
+            <td key={id}><LinkRate direction="tx" value={client.curTx} /></td>
+          ))}
         </tr>
         {detailRows.map((field) => (
           <tr key={field}>

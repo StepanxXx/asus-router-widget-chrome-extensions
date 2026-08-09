@@ -121,6 +121,78 @@
   color: #f87171;
 }
 
+.clients-traffic-direction {
+  display: inline-block;
+  margin-left: 3px;
+  font-size: 12px;
+  line-height: 1;
+  vertical-align: 1px;
+}
+
+.clients-traffic-direction--download {
+  color: #22c55e;
+}
+
+.clients-traffic-direction--upload {
+  color: #fb7185;
+}
+
+.clients-login-status {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  min-width: 48px;
+  padding: 3px 8px;
+  font-weight: 700;
+  line-height: 1.2;
+  border: 1px solid;
+  border-radius: 999px;
+}
+
+.clients-login-status.is-logged-in {
+  color: #86efac;
+  background: rgb(34 197 94 / 14%);
+  border-color: rgb(34 197 94 / 55%);
+}
+
+.clients-login-status.is-logged-out {
+  color: #9ca3af;
+  background: rgb(156 163 175 / 10%);
+  border-color: rgb(107 114 128 / 55%);
+}
+
+.clients-login-status-icon {
+  font-size: 13px;
+}
+
+.clients-link-rate {
+  display: inline-grid;
+  grid-template-columns: auto auto minmax(28px, auto);
+  gap: 5px;
+  align-items: center;
+  min-width: 76px;
+  padding: 3px 8px;
+  border: 1px solid;
+  border-radius: 6px;
+}
+
+.clients-link-rate--rx {
+  color: #86efac;
+  background: rgb(34 197 94 / 14%);
+  border-color: rgb(34 197 94 / 55%);
+}
+
+.clients-link-rate--tx {
+  color: #fda4af;
+  background: rgb(251 113 133 / 14%);
+  border-color: rgb(251 113 133 / 55%);
+}
+
+.clients-link-rate-icon {
+  font-size: 11px;
+  line-height: 1;
+}
+
 .clients-chart {
   display: block;
   width: 150px;
@@ -132,6 +204,18 @@
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.clients-chart-area {
+  stroke: none;
+}
+
+.clients-chart-area--inc {
+  fill: rgb(34 197 94 / 30%);
+}
+
+.clients-chart-area--out {
+  fill: rgb(251 113 133 / 30%);
 }
 
 .clients-chart-line--inc {

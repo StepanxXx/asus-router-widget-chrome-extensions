@@ -96,6 +96,12 @@ describe('ClientsDialog', () => {
     expect(names).toEqual(['<img src=x onerror=alert(1)>', 'Printer']);
     expect(container.querySelector('img')).not.toBeInTheDocument();
     expect(screen.getAllByRole('img', { name: 'Client traffic history' })).toHaveLength(2);
+    expect(screen.getAllByLabelText('download')).toHaveLength(4);
+    expect(screen.getAllByLabelText('upload')).toHaveLength(4);
+    expect(screen.getByLabelText('Logged in')).toHaveClass('is-logged-in');
+    expect(screen.getByLabelText('Not logged in')).toHaveClass('is-logged-out');
+    expect(screen.getAllByLabelText('Current receive rate')).toHaveLength(2);
+    expect(screen.getAllByLabelText('Current transmit rate')).toHaveLength(2);
   });
 
   it('notifies the mount layer when closed', () => {

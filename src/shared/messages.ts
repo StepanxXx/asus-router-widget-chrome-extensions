@@ -5,8 +5,6 @@ export type OpenFeatureMessage = {
   feature: Feature;
 };
 
-export type ExtensionMessage = OpenFeatureMessage;
-
 export type ExtensionResponse = { ok: true } | { ok: false; error: string };
 
 export function isOpenFeatureMessage(message: unknown): message is OpenFeatureMessage {

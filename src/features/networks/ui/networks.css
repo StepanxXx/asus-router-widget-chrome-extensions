@@ -63,20 +63,24 @@
 .networks-table td {
   padding: 8px;
   text-align: right;
-  border: 1px solid #374151;
+  border-top: 1px solid #374151;
+}
+
+.networks-table tr:nth-child(1) th,
+.networks-table tr:nth-child(2) th,
+.networks-table tr:nth-child(1) td,
+.networks-table tr:nth-child(2) td {
+  border: none;
 }
 
 .networks-title-cell {
   color: #d1d5db;
   text-align: left !important;
-  background: #1f2937;
 }
 
 .networks-total-cell {
   color: #d1d5db;
   font-weight: 600;
-  text-align: left !important;
-  background: #1f2937;
 }
 
 .networks-diagram-cell {

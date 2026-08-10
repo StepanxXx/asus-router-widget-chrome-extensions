@@ -11,6 +11,7 @@ Chrome-розширення для перегляду клієнтів і мер
 - статистика INTERNET, LAN, 2.4 GHz і 5 GHz інтерфейсів;
 - автоматичне оновлення даних кожні 2 секунди;
 - автоматичне припинення polling після закриття діалогу;
+- перемикання між Clients і Networks без перемонтування спільної оболонки діалогу;
 - ізоляція UI від стилів ASUS через Shadow DOM.
 
 ## Технології
@@ -45,6 +46,8 @@ npm run dev
 
 Vite запускає development-збірку розширення. Для перевірки у Chrome завантажте створену директорію `dist/` як unpacked extension.
 
+Під час перевірки development-збірки процес `npm run dev` має залишатися запущеним: service worker завантажує модулі з локального Vite-сервера. Для роботи без dev-сервера використовуйте production build.
+
 ## Production build
 
 ```bash
@@ -60,7 +63,8 @@ npm run build
 3. Натисніть **Load unpacked**.
 4. Виберіть директорію `dist/`.
 5. Відкрийте сторінку ASUS-роутера та авторизуйтеся.
-6. Натисніть іконку розширення й виберіть `clients` або `networks`.
+6. Натисніть іконку розширення.
+7. У діалозі на сторінці виберіть `Clients` або `Networks`.
 
 Після нової збірки натисніть **Reload** на картці розширення та оновіть вкладку роутера.
 
@@ -99,30 +103,40 @@ npm run verify:bundle
 ## Архітектура
 
 ```text
-popup
-  └── програмно підключає content bundle до активної вкладки
-        └── content bridge приймає типізовану команду
-              ├── монтує Clients у власний Shadow DOM
-              └── монтує Networks у власний Shadow DOM
+клік по іконці розширення
+  └── background service worker
+        ├── програмно підключає content bundle до активної вкладки
+        └── надсилає типізовану команду open-dialog
+              └── content bridge монтує один ShadowRoot
+                    └── DialogRouter
+                          ├── початкове меню вибору
+                          ├── ClientsView
+                          └── NetworksView
 ```
+
+`DialogRouter` зберігає спільні `<dialog>`, header, навігацію, `ShadowRoot` і `QueryClient`. Під час перемикання розмонтовується лише неактивний view із відповідним polling hook.
 
 Основні директорії:
 
 ```text
 src/
-├── content/              # маршрутизація команд popup
+├── background/           # обробка кліку по іконці та ін'єкція content bundle
+├── components/
+│   └── ShadowRoot/       # спільна ізоляція UI через Shadow DOM
+├── content/              # bridge для типізованих команд service worker
 ├── features/
 │   ├── clients/
 │   │   ├── api/          # запити та parser-и ASUS
 │   │   ├── hooks/        # TanStack Query polling
 │   │   ├── model/        # типи та traffic calculations
-│   │   └── ui/           # React UI і Shadow DOM mount
+│   │   └── ui/           # ClientsView і графіки клієнтів
+│   ├── dialog/
+│   │   └── ui/           # mount, router, header і навігація
 │   └── networks/
-│       ├── api/
-│       ├── hooks/
-│       ├── model/
-│       └── ui/
-├── popup/                # React popup
+│       ├── api/           # запити мережевого трафіку
+│       ├── hooks/         # polling мережевих інтерфейсів
+│       ├── model/         # конфігурація, типи та transformations
+│       └── ui/            # NetworksView і графіки мереж
 ├── shared/               # форматування та SVG chart helpers
 └── test/                 # спільне тестове налаштування
 ```
@@ -158,9 +172,6 @@ Manifest використовує лише:
 - `activeTab` — тимчасовий доступ до вкладки після дії користувача;
 - `scripting` — програмне підключення content bundle.
 
-Розширення не має background service worker, не виконує код із відповідей роутера та не надсилає дані до сторонніх сервісів.
+Manifest V3 background service worker запускається Chrome за потреби, зокрема після натискання на іконку розширення. Він ін'єктує content bundle в активну вкладку та надсилає команду відкриття діалогу, але не працює постійно.
 
-## Додаткова документація
-
-- [MIGRATION_PLAN.md](./MIGRATION_PLAN.md) — план і статус міграції;
-- [SMOKE_TEST.md](./SMOKE_TEST.md) — ручна перевірка production-збірки.
+Розширення не виконує код із відповідей роутера та не надсилає дані до сторонніх сервісів. Chrome забороняє ін'єкцію на системних сторінках на кшталт `chrome://` і Chrome Web Store; у такому разі іконка показує badge `ERR`.

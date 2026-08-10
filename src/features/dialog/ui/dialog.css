@@ -1,0 +1,85 @@
+:host {
+  color: #f9fafb;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.dialog-modal {
+  max-height: calc(100vh - 32px);
+  padding: 0;
+  overflow: auto;
+  color: inherit;
+  background: #111827;
+  border: 2px solid #4b5563;
+  border-radius: 12px;
+  box-shadow: 0 15px 35px rgb(0 0 0 / 35%);
+}
+
+.dialog-modal--clients {
+  width: min(95vw, 1600px);
+}
+
+.dialog-modal--networks {
+  width: min(760px, calc(100vw - 32px));
+}
+
+.dialog-modal::backdrop {
+  background: rgb(0 0 0 / 55%);
+}
+
+.dialog-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  color: #fff;
+  background: #111827;
+  border-bottom: 1px solid #374151;
+}
+
+.dialog-header h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.dialog-modal--clients .dialog-header h2 {
+  font-size: 17px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.dialog-close {
+  padding: 0;
+  color: inherit;
+  font-size: 26px;
+  line-height: 1;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.dialog-navigation {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  background: #1f2937;
+  border-radius: 8px;
+}
+
+.dialog-navigation button {
+  padding: 6px 10px;
+  color: #d1d5db;
+  font: inherit;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.dialog-navigation button[aria-current='page'] {
+  color: #fff;
+  background: #374151;
+  cursor: default;
+}

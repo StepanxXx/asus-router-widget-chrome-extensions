@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { NetworkTrafficState } from '../model/types';
-import { NetworksDialog } from './NetworksDialog';
+import { NetworksView } from './NetworksDialog';
 
 const mocks = vi.hoisted(() => ({
   useNetworkTraffic: vi.fn(),
@@ -29,7 +29,7 @@ const networkState: NetworkTrafficState = {
   },
 };
 
-describe('NetworksDialog', () => {
+describe('NetworksView', () => {
   beforeEach(() => {
     mocks.useNetworkTraffic.mockReset();
   });
@@ -39,7 +39,7 @@ describe('NetworksDialog', () => {
   it('renders the loading state', () => {
     mocks.useNetworkTraffic.mockReturnValue({ isPending: true, isError: false } as never);
 
-    render(<NetworksDialog onClose={vi.fn()} />);
+    render(<NetworksView />);
 
     expect(screen.getByText('Loading…')).toBeInTheDocument();
   });
@@ -51,40 +51,22 @@ describe('NetworksDialog', () => {
       error: new Error('Router is unavailable'),
     } as never);
 
-    render(<NetworksDialog onClose={vi.fn()} />);
+    render(<NetworksView />);
 
     expect(screen.getByText('Router is unavailable')).toHaveClass('networks-status--error');
   });
 
-  it('renders validated network data and closes the dialog', () => {
-    const onClose = vi.fn();
+  it('renders validated network data', () => {
     mocks.useNetworkTraffic.mockReturnValue({
       isPending: false,
       isError: false,
       data: networkState,
     } as never);
 
-    render(<NetworksDialog onClose={onClose} />);
+    render(<NetworksView />);
 
     expect(screen.getByText('INTERNET')).toBeInTheDocument();
     expect(screen.getByText('1 MB')).toBeInTheDocument();
     expect(screen.getByRole('img', { name: 'Network traffic history' })).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: 'Close' }));
-    expect(onClose).toHaveBeenCalledOnce();
-  });
-
-  it('navigates to clients from the header', () => {
-    const onShowClients = vi.fn();
-    mocks.useNetworkTraffic.mockReturnValue({ isPending: true, isError: false } as never);
-
-    render(<NetworksDialog onClose={vi.fn()} onShowClients={onShowClients} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Clients' }));
-
-    expect(onShowClients).toHaveBeenCalledOnce();
-    expect(screen.getByRole('button', { name: 'Networks' })).toHaveAttribute(
-      'aria-current',
-      'page',
-    );
   });
 });

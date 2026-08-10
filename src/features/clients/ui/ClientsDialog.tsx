@@ -1,14 +1,8 @@
-import { useEffect, useRef } from 'react';
 import { useClientsTraffic } from '../hooks/useClientsTraffic';
 import { getRssiLabel } from '../model/signalStrength';
 import type { ClientTrafficState, ClientView } from '../model/types';
 import { formatMegabitsPerSecond, formatMegabytes } from '../../../shared/formatTraffic';
 import { ClientTrafficChart } from './ClientTrafficChart';
-
-type ClientsDialogProps = {
-  onClose: () => void;
-  onShowNetworks?: () => void;
-};
 
 const detailRows = [
   'mac',
@@ -228,48 +222,21 @@ function ClientsTable({ state }: { state: ClientTrafficState }) {
   );
 }
 
-export function ClientsDialog({ onClose, onShowNetworks }: ClientsDialogProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
+export function ClientsView() {
   const query = useClientsTraffic();
 
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (dialog && !dialog.open) dialog.showModal();
-  }, []);
-
   return (
-    <dialog ref={dialogRef} className="clients-modal" onClose={onClose} onCancel={onClose}>
-      <header className="clients-header">
-        <h2>Clients</h2>
-        <nav className="clients-navigation" aria-label="Dialog navigation">
-          <button type="button" aria-current="page" disabled>
-            Clients
-          </button>
-          <button type="button" onClick={onShowNetworks}>
-            Networks
-          </button>
-        </nav>
-        <button
-          className="clients-close"
-          type="button"
-          aria-label="Close"
-          onClick={() => dialogRef.current?.close()}
-        >
-          ×
-        </button>
-      </header>
-      <div className="clients-content">
-        {query.isPending && <p className="clients-status">Loading clients…</p>}
-        {query.isError && (
-          <p className="clients-status clients-status--error">{query.error.message}</p>
-        )}
-        {query.data && Object.keys(query.data.clients).length === 0 && (
-          <p className="clients-status">No clients found.</p>
-        )}
-        {query.data && Object.keys(query.data.clients).length > 0 && (
-          <ClientsTable state={query.data} />
-        )}
-      </div>
-    </dialog>
+    <div className="clients-content">
+      {query.isPending && <p className="clients-status">Loading clients…</p>}
+      {query.isError && (
+        <p className="clients-status clients-status--error">{query.error.message}</p>
+      )}
+      {query.data && Object.keys(query.data.clients).length === 0 && (
+        <p className="clients-status">No clients found.</p>
+      )}
+      {query.data && Object.keys(query.data.clients).length > 0 && (
+        <ClientsTable state={query.data} />
+      )}
+    </div>
   );
 }

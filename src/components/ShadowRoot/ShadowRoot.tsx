@@ -1,11 +1,17 @@
-import { type PropsWithChildren, useLayoutEffect, useRef, useState } from 'react';
+import {
+  type ComponentPropsWithoutRef,
+  type PropsWithChildren,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { createPortal } from 'react-dom';
 
-interface ShadowRootProps extends PropsWithChildren {
-  css?: string;
-}
+type ShadowRootProps = PropsWithChildren<
+  { css?: string } & Omit<ComponentPropsWithoutRef<'div'>, 'children'>
+>;
 
-export function ShadowRoot({ children, css }: ShadowRootProps) {
+export function ShadowRoot({ children, css, ...hostProps }: ShadowRootProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const [root, setRoot] = useState<ShadowRoot | null>(null);
 
@@ -22,7 +28,7 @@ export function ShadowRoot({ children, css }: ShadowRootProps) {
   }, []);
 
   return (
-    <div ref={hostRef}>
+    <div {...hostProps} ref={hostRef}>
       {root &&
         createPortal(
           <>

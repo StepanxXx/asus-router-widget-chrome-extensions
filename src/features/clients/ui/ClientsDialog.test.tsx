@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ClientTrafficState } from '../model/types';
-import { ClientsDialog } from './ClientsDialog';
+import { ClientsView } from './ClientsDialog';
 
 const mocks = vi.hoisted(() => ({
   useClientsTraffic: vi.fn(),
@@ -52,7 +52,7 @@ const clientsState: ClientTrafficState = {
   },
 };
 
-describe('ClientsDialog', () => {
+describe('ClientsView', () => {
   beforeEach(() => {
     mocks.useClientsTraffic.mockReset();
   });
@@ -61,7 +61,7 @@ describe('ClientsDialog', () => {
 
   it('renders loading, empty and error states', () => {
     mocks.useClientsTraffic.mockReturnValue({ isPending: true, isError: false } as never);
-    const view = render(<ClientsDialog onClose={vi.fn()} />);
+    const view = render(<ClientsView />);
     expect(screen.getByText('Loading clients…')).toBeInTheDocument();
 
     mocks.useClientsTraffic.mockReturnValue({
@@ -69,7 +69,7 @@ describe('ClientsDialog', () => {
       isError: false,
       data: { ...clientsState, clients: {} },
     } as never);
-    view.rerender(<ClientsDialog onClose={vi.fn()} />);
+    view.rerender(<ClientsView />);
     expect(screen.getByText('No clients found.')).toBeInTheDocument();
 
     mocks.useClientsTraffic.mockReturnValue({
@@ -77,7 +77,7 @@ describe('ClientsDialog', () => {
       isError: true,
       error: new Error('Invalid client response'),
     } as never);
-    view.rerender(<ClientsDialog onClose={vi.fn()} />);
+    view.rerender(<ClientsView />);
     expect(screen.getByText('Invalid client response')).toHaveClass('clients-status--error');
   });
 
@@ -88,7 +88,7 @@ describe('ClientsDialog', () => {
       data: clientsState,
     } as never);
 
-    const { container } = render(<ClientsDialog onClose={vi.fn()} />);
+    const { container } = render(<ClientsView />);
     const names = Array.from(container.querySelectorAll('.clients-card-name')).map(
       (element) => element.textContent,
     );
@@ -102,26 +102,5 @@ describe('ClientsDialog', () => {
     expect(screen.getByLabelText('Not logged in')).toHaveClass('is-logged-out');
     expect(screen.getAllByLabelText('Current receive rate')).toHaveLength(2);
     expect(screen.getAllByLabelText('Current transmit rate')).toHaveLength(2);
-  });
-
-  it('notifies the mount layer when closed', () => {
-    const onClose = vi.fn();
-    mocks.useClientsTraffic.mockReturnValue({ isPending: true, isError: false } as never);
-
-    render(<ClientsDialog onClose={onClose} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Close' }));
-
-    expect(onClose).toHaveBeenCalledOnce();
-  });
-
-  it('navigates to networks from the header', () => {
-    const onShowNetworks = vi.fn();
-    mocks.useClientsTraffic.mockReturnValue({ isPending: true, isError: false } as never);
-
-    render(<ClientsDialog onClose={vi.fn()} onShowNetworks={onShowNetworks} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Networks' }));
-
-    expect(onShowNetworks).toHaveBeenCalledOnce();
-    expect(screen.getByRole('button', { name: 'Clients' })).toHaveAttribute('aria-current', 'page');
   });
 });

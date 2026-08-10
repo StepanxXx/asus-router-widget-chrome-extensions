@@ -1,14 +1,8 @@
-import { useEffect, useRef } from 'react';
 import { formatMegabitsPerSecond, formatMegabytes } from '../../../shared/formatTraffic';
 import { networkTypes, type NetworkType } from '../model/networkConfig';
 import type { NetworkTrafficState, TrafficVector } from '../model/types';
 import { useNetworkTraffic } from '../hooks/useNetworkTraffic';
 import { TrafficChart } from './TrafficChart';
-
-type NetworksDialogProps = {
-  onClose: () => void;
-  onShowClients?: () => void;
-};
 
 function Direction({ vector }: { vector: TrafficVector }) {
   return (
@@ -58,47 +52,20 @@ function NetworkRows({ state }: { state: NetworkTrafficState }) {
   );
 }
 
-export function NetworksDialog({ onClose, onShowClients }: NetworksDialogProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
+export function NetworksView() {
   const query = useNetworkTraffic();
 
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (dialog && !dialog.open) dialog.showModal();
-  }, []);
-
   return (
-    <dialog ref={dialogRef} className="networks-modal" onClose={onClose} onCancel={onClose}>
-      <header className="networks-header">
-        <h2>Network total / speed</h2>
-        <nav className="networks-navigation" aria-label="Dialog navigation">
-          <button type="button" onClick={onShowClients}>
-            Clients
-          </button>
-          <button type="button" aria-current="page" disabled>
-            Networks
-          </button>
-        </nav>
-        <button
-          className="networks-close"
-          type="button"
-          aria-label="Close"
-          onClick={() => dialogRef.current?.close()}
-        >
-          ×
-        </button>
-      </header>
-      <div className="networks-content">
-        {query.isPending && <p className="networks-status">Loading…</p>}
-        {query.isError && (
-          <p className="networks-status networks-status--error">{query.error.message}</p>
-        )}
-        {query.data && (
-          <table className="networks-table">
-            <NetworkRows state={query.data} />
-          </table>
-        )}
-      </div>
-    </dialog>
+    <div className="networks-content">
+      {query.isPending && <p className="networks-status">Loading…</p>}
+      {query.isError && (
+        <p className="networks-status networks-status--error">{query.error.message}</p>
+      )}
+      {query.data && (
+        <table className="networks-table">
+          <NetworkRows state={query.data} />
+        </table>
+      )}
+    </div>
   );
 }

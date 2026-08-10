@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createRoot, type Root } from 'react-dom/client';
+import { ShadowRoot } from '../../../components/ShadowRoot/ShadowRoot';
 import styles from './networks.css?inline';
 import { NetworksDialog } from './NetworksDialog';
 
@@ -26,20 +27,17 @@ export function mountNetworks(): void {
 
   const host = document.createElement('div');
   host.id = 'asus-router-networks-root';
-  const shadowRoot = host.attachShadow({ mode: 'open' });
-  const style = document.createElement('style');
-  const appRoot = document.createElement('div');
-  style.textContent = styles;
-  shadowRoot.append(style, appRoot);
   document.body.appendChild(host);
 
-  const root = createRoot(appRoot);
+  const root = createRoot(host);
   const queryClient = new QueryClient();
   mountedNetworks = { host, root, queryClient };
 
   root.render(
-    <QueryClientProvider client={queryClient}>
-      <NetworksDialog onClose={() => queueMicrotask(unmountNetworks)} />
-    </QueryClientProvider>,
+    <ShadowRoot css={styles}>
+      <QueryClientProvider client={queryClient}>
+        <NetworksDialog onClose={() => queueMicrotask(unmountNetworks)} />
+      </QueryClientProvider>
+    </ShadowRoot>,
   );
 }

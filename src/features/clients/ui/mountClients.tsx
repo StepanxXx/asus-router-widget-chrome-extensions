@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createRoot, type Root } from 'react-dom/client';
+import { ShadowRoot } from '../../../components/ShadowRoot/ShadowRoot';
 import styles from './clients.css?inline';
 import { ClientsDialog } from './ClientsDialog';
 
@@ -26,20 +27,17 @@ export function mountClients(): void {
 
   const host = document.createElement('div');
   host.id = 'asus-router-clients-root';
-  const shadowRoot = host.attachShadow({ mode: 'open' });
-  const style = document.createElement('style');
-  const appRoot = document.createElement('div');
-  style.textContent = styles;
-  shadowRoot.append(style, appRoot);
   document.body.appendChild(host);
 
-  const root = createRoot(appRoot);
+  const root = createRoot(host);
   const queryClient = new QueryClient();
   mountedClients = { host, root, queryClient };
 
   root.render(
-    <QueryClientProvider client={queryClient}>
-      <ClientsDialog onClose={() => queueMicrotask(unmountClients)} />
-    </QueryClientProvider>,
+    <ShadowRoot css={styles}>
+      <QueryClientProvider client={queryClient}>
+        <ClientsDialog onClose={() => queueMicrotask(unmountClients)} />
+      </QueryClientProvider>
+    </ShadowRoot>,
   );
 }

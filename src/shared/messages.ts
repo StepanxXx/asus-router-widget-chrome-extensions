@@ -1,18 +1,20 @@
 export type Feature = 'clients' | 'networks';
 
-export type OpenFeatureMessage = {
-  type: 'open-feature';
-  feature: Feature;
+export type OpenDialogMessage = {
+  type: 'open-dialog';
+  initialView?: Feature;
 };
 
 export type ExtensionResponse = { ok: true } | { ok: false; error: string };
 
-export function isOpenFeatureMessage(message: unknown): message is OpenFeatureMessage {
+export function isOpenDialogMessage(message: unknown): message is OpenDialogMessage {
   if (!message || typeof message !== 'object') return false;
 
-  const candidate = message as Partial<OpenFeatureMessage>;
+  const candidate = message as Partial<OpenDialogMessage>;
   return (
-    candidate.type === 'open-feature' &&
-    (candidate.feature === 'clients' || candidate.feature === 'networks')
+    candidate.type === 'open-dialog' &&
+    (candidate.initialView === undefined ||
+      candidate.initialView === 'clients' ||
+      candidate.initialView === 'networks')
   );
 }

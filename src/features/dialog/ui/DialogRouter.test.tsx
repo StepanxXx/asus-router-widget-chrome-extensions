@@ -15,6 +15,14 @@ vi.mock('../../networks/ui/NetworksDialog', () => ({
 describe('DialogRouter', () => {
   afterEach(cleanup);
 
+  it('opens with a feature selection menu', () => {
+    render(<DialogRouter initialView="menu" onClose={vi.fn()} />);
+
+    expect(screen.getByText('Choose the information you want to view:')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Clients/ }));
+    expect(screen.getByText('Clients view')).toBeInTheDocument();
+  });
+
   it('switches views without remounting the application root', () => {
     render(<DialogRouter initialView="clients" onClose={vi.fn()} />);
 

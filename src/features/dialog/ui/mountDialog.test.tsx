@@ -2,20 +2,20 @@
 
 import { act, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { mountNetworks, unmountNetworks } from './mountNetworks';
+import { mountDialog, unmountDialog } from './mountDialog';
 
 const mocks = vi.hoisted(() => ({
   fetchNetworkSnapshot: vi.fn(),
 }));
 
-vi.mock('../api/networkApi', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('../api/networkApi')>()),
+vi.mock('../../networks/api/networkApi', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../networks/api/networkApi')>()),
   fetchNetworkSnapshot: mocks.fetchNetworkSnapshot,
 }));
 
-describe('Networks mount lifecycle', () => {
+describe('Dialog mount lifecycle', () => {
   afterEach(() => {
-    unmountNetworks();
+    unmountDialog();
     mocks.fetchNetworkSnapshot.mockReset();
   });
 
@@ -28,12 +28,12 @@ describe('Networks mount lifecycle', () => {
       });
     });
 
-    act(() => mountNetworks());
+    act(() => mountDialog('networks'));
     await waitFor(() => expect(mocks.fetchNetworkSnapshot).toHaveBeenCalledOnce());
 
-    act(() => unmountNetworks());
+    act(() => unmountDialog());
 
     expect(requestSignal?.aborted).toBe(true);
-    expect(document.getElementById('asus-router-networks-root')).not.toBeInTheDocument();
+    expect(document.getElementById('asus-router-dialog-root')).not.toBeInTheDocument();
   });
 });

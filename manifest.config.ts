@@ -7,11 +7,14 @@ export default defineManifest({
   manifest_version: 3,
   permissions: ['activeTab', 'scripting'],
   action: {
-    default_popup: 'popup.html',
     default_icon: {
       16: 'images/icon-16.png',
       128: 'images/icon-128.png',
     },
+  },
+  background: {
+    service_worker: 'src/background/serviceWorker.ts',
+    type: 'module',
   },
   icons: {
     16: 'images/icon-16.png',

@@ -7,6 +7,7 @@ import { ClientTrafficChart } from './ClientTrafficChart';
 
 type ClientsDialogProps = {
   onClose: () => void;
+  onShowNetworks?: () => void;
 };
 
 const detailRows = [
@@ -227,7 +228,7 @@ function ClientsTable({ state }: { state: ClientTrafficState }) {
   );
 }
 
-export function ClientsDialog({ onClose }: ClientsDialogProps) {
+export function ClientsDialog({ onClose, onShowNetworks }: ClientsDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const query = useClientsTraffic();
 
@@ -240,6 +241,14 @@ export function ClientsDialog({ onClose }: ClientsDialogProps) {
     <dialog ref={dialogRef} className="clients-modal" onClose={onClose} onCancel={onClose}>
       <header className="clients-header">
         <h2>Clients</h2>
+        <nav className="clients-navigation" aria-label="Dialog navigation">
+          <button type="button" aria-current="page" disabled>
+            Clients
+          </button>
+          <button type="button" onClick={onShowNetworks}>
+            Networks
+          </button>
+        </nav>
         <button
           className="clients-close"
           type="button"

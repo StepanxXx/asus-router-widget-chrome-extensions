@@ -113,4 +113,15 @@ describe('ClientsDialog', () => {
 
     expect(onClose).toHaveBeenCalledOnce();
   });
+
+  it('navigates to networks from the header', () => {
+    const onShowNetworks = vi.fn();
+    mocks.useClientsTraffic.mockReturnValue({ isPending: true, isError: false } as never);
+
+    render(<ClientsDialog onClose={vi.fn()} onShowNetworks={onShowNetworks} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Networks' }));
+
+    expect(onShowNetworks).toHaveBeenCalledOnce();
+    expect(screen.getByRole('button', { name: 'Clients' })).toHaveAttribute('aria-current', 'page');
+  });
 });

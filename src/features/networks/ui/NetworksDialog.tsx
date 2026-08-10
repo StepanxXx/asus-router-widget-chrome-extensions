@@ -7,6 +7,7 @@ import { TrafficChart } from './TrafficChart';
 
 type NetworksDialogProps = {
   onClose: () => void;
+  onShowClients?: () => void;
 };
 
 function Direction({ vector }: { vector: TrafficVector }) {
@@ -57,7 +58,7 @@ function NetworkRows({ state }: { state: NetworkTrafficState }) {
   );
 }
 
-export function NetworksDialog({ onClose }: NetworksDialogProps) {
+export function NetworksDialog({ onClose, onShowClients }: NetworksDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const query = useNetworkTraffic();
 
@@ -70,6 +71,14 @@ export function NetworksDialog({ onClose }: NetworksDialogProps) {
     <dialog ref={dialogRef} className="networks-modal" onClose={onClose} onCancel={onClose}>
       <header className="networks-header">
         <h2>Network total / speed</h2>
+        <nav className="networks-navigation" aria-label="Dialog navigation">
+          <button type="button" onClick={onShowClients}>
+            Clients
+          </button>
+          <button type="button" aria-current="page" disabled>
+            Networks
+          </button>
+        </nav>
         <button
           className="networks-close"
           type="button"

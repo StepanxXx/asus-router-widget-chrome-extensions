@@ -37,6 +37,30 @@
   font-size: 16px;
 }
 
+.networks-navigation {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  background: #1f2937;
+  border-radius: 8px;
+}
+
+.networks-navigation button {
+  padding: 6px 10px;
+  color: #d1d5db;
+  font: inherit;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.networks-navigation button[aria-current='page'] {
+  color: #fff;
+  background: #374151;
+  cursor: default;
+}
+
 .networks-close {
   padding: 0;
   color: inherit;

@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createRoot, type Root } from 'react-dom/client';
 import { ShadowRoot } from '../../../components/ShadowRoot/ShadowRoot';
+import { mountClients } from '../../clients/ui/mountClients';
 import styles from './networks.css?inline';
 import { NetworksDialog } from './NetworksDialog';
 
@@ -36,7 +37,15 @@ export function mountNetworks(): void {
   root.render(
     <ShadowRoot css={styles}>
       <QueryClientProvider client={queryClient}>
-        <NetworksDialog onClose={() => queueMicrotask(unmountNetworks)} />
+        <NetworksDialog
+          onClose={() => queueMicrotask(unmountNetworks)}
+          onShowClients={() =>
+            queueMicrotask(() => {
+              unmountNetworks();
+              mountClients();
+            })
+          }
+        />
       </QueryClientProvider>
     </ShadowRoot>,
   );

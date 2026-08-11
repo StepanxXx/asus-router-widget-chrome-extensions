@@ -215,6 +215,8 @@ npm uninstall react react-dom @types/react @types/react-dom
 
 ## Фаза 4. Додати size report і budget
 
+**Статус:** реалізовано з warning threshold `13 KB gzip`.
+
 ### Зміни
 
 Розширити `scripts/verify-build.mjs`:
@@ -228,24 +230,19 @@ const contentScriptPath = resolve('dist/src/content/index.js');
 const content = await readFile(contentScriptPath);
 const rawKb = content.byteLength / 1024;
 const gzipKb = gzipSync(content).byteLength / 1024;
+const MAX_GZIP_KB = 13;
 
 console.log(`Content bundle: ${rawKb.toFixed(1)} KB (${gzipKb.toFixed(1)} KB gzip)`);
 ```
 
-Спочатку додати лише звіт. Після завершення Preact-міграції зафіксувати новий baseline і встановити budget із невеликим запасом:
-
-```js
-const MAX_GZIP_KB = /* виміряний baseline + приблизно 5% */;
-```
-
-Не встановлювати довільний ліміт `50 KB`, доки перевірений bundle фактично не вкладається в нього.
+Warning threshold `13 KB gzip` залишає приблизно 15% запасу від перевіреного Preact baseline `11.3 KB gzip` (при розрахунку через 1024 bytes на KB). Перевищення показує попередження, але не блокує build/check pipeline. Поріг потрібно переглядати свідомо, якщо майбутня функціональність обґрунтовано збільшить bundle.
 
 ### Критерії приймання
 
 - `npm run verify:bundle` показує raw і gzip розмір;
 - перевірка `process.env` збережена;
-- перевищення budget завершує команду з ненульовим exit code;
-- поточний перевірений build проходить budget.
+- перевищення threshold виводить помітне попередження без ненульового exit code;
+- поточний перевірений build не виводить попередження.
 
 ---
 

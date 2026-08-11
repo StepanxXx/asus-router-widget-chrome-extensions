@@ -20,7 +20,7 @@ Chrome-розширення для перегляду клієнтів і мер
 - TypeScript;
 - Vite і CRXJS;
 - Manifest V3;
-- Vitest і React Testing Library;
+- Vitest і Preact Testing Library;
 - ESLint і Prettier.
 
 ## Вимоги

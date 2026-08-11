@@ -1,8 +1,8 @@
 import { formatMegabitsPerSecond, formatMegabytes } from '../../../shared/formatTraffic';
+import { TrafficChart } from '../../../shared/TrafficChart';
 import { networkTypes, type NetworkType } from '../model/networkConfig';
 import type { NetworkTrafficState, TrafficVector } from '../model/types';
 import { useNetworkTraffic } from '../hooks/useNetworkTraffic';
-import { TrafficChart } from './TrafficChart';
 
 function Direction({ vector }: { vector: TrafficVector }) {
   return (
@@ -42,7 +42,12 @@ function NetworkRows({ state }: { state: NetworkTrafficState }) {
             </td>
             {index === 0 && (
               <td className="networks-diagram-cell" rowSpan={2}>
-                <TrafficChart samples={traffic.speed.log} max={state.max} />
+                <TrafficChart
+                  samples={traffic.speed.log}
+                  max={state.max}
+                  className="networks-chart"
+                  label="Network traffic history"
+                />
               </td>
             )}
           </tr>

@@ -2,7 +2,7 @@ import { useClientsTraffic } from '../hooks/useClientsTraffic';
 import { getRssiLabel } from '../model/signalStrength';
 import type { ClientTrafficState, ClientView } from '../model/types';
 import { formatMegabitsPerSecond, formatMegabytes } from '../../../shared/formatTraffic';
-import { ClientTrafficChart } from './ClientTrafficChart';
+import { TrafficChart } from '../../../shared/TrafficChart';
 
 const detailRows = [
   'mac',
@@ -131,7 +131,12 @@ function ClientsTable({ state }: { state: ClientTrafficState }) {
           </th>
           {clients.map(([id, client]) => (
             <td key={id}>
-              <ClientTrafficChart samples={client.log} max={state.max} />
+              <TrafficChart
+                samples={client.log}
+                max={state.max}
+                className="clients-chart"
+                label="Client traffic history"
+              />
             </td>
           ))}
         </tr>

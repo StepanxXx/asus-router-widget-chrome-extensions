@@ -146,36 +146,10 @@ td.clients-title-cellr {
 }
 
 .clients-chart {
-  display: block;
-  width: 150px;
-  height: 50px;
-}
-
-.clients-chart-line {
-  fill: none;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.clients-chart-area {
-  stroke: none;
-}
-
-.clients-chart-area--inc {
-  fill: rgb(34 197 94 / 30%);
-}
-
-.clients-chart-area--out {
-  fill: rgb(251 113 133 / 30%);
-}
-
-.clients-chart-line--inc {
-  stroke: #22c55e;
-}
-
-.clients-chart-line--out {
-  stroke: #f87171;
+  --traffic-chart-inc-area: rgb(34 197 94 / 30%);
+  --traffic-chart-out-area: rgb(251 113 133 / 30%);
+  --traffic-chart-inc-line: #22c55e;
+  --traffic-chart-out-line: #f87171;
 }
 
 .clients-status {

@@ -134,3 +134,36 @@
   background: #374151;
   cursor: default;
 }
+
+.traffic-chart {
+  display: block;
+  width: 150px;
+  height: 50px;
+}
+
+.traffic-chart-line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.traffic-chart-area {
+  stroke: none;
+}
+
+.traffic-chart-area--inc {
+  fill: var(--traffic-chart-inc-area);
+}
+
+.traffic-chart-area--out {
+  fill: var(--traffic-chart-out-area);
+}
+
+.traffic-chart-line--inc {
+  stroke: var(--traffic-chart-inc-line);
+}
+
+.traffic-chart-line--out {
+  stroke: var(--traffic-chart-out-line);
+}

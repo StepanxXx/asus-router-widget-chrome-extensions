@@ -20,14 +20,12 @@ Chrome-розширення для перегляду клієнтів і мер
 - TypeScript;
 - Vite і CRXJS;
 - Manifest V3;
-- TanStack Query;
-- Zod;
 - Vitest і React Testing Library;
 - ESLint і Prettier.
 
 ## Вимоги
 
-- Node.js `20.19+` або `22.12+`;
+- Node.js `20.19+` або `22.12+` і новіший;
 - npm;
 - Chromium-браузер із підтримкою Manifest V3;
 - доступ до адміністративної сторінки сумісного ASUS-роутера.
@@ -98,8 +96,6 @@ npm run build
 npm run verify:bundle
 ```
 
-Ручний сценарій перевірки описаний у [SMOKE_TEST.md](./SMOKE_TEST.md).
-
 ## Архітектура
 
 ```text
@@ -114,7 +110,7 @@ npm run verify:bundle
                           └── NetworksView
 ```
 
-`DialogRouter` зберігає спільні `<dialog>`, header, навігацію, `ShadowRoot` і `QueryClient`. Під час перемикання розмонтовується лише неактивний view із відповідним polling hook.
+`DialogRouter` зберігає спільні `<dialog>`, header, навігацію та `ShadowRoot`. Під час перемикання розмонтовується лише неактивний view із відповідним polling hook.
 
 Основні директорії:
 
@@ -126,18 +122,18 @@ src/
 ├── content/              # bridge для типізованих команд service worker
 ├── features/
 │   ├── clients/
-│   │   ├── api/          # запити та parser-и ASUS
-│   │   ├── hooks/        # TanStack Query polling
-│   │   ├── model/        # типи та traffic calculations
+│   │   ├── api/          # запити та парсинг відповідей ASUS
+│   │   ├── hooks/        # polling клієнтів і їхнього трафіку
+│   │   ├── model/        # типи та розрахунки трафіку
 │   │   └── ui/           # ClientsView і графіки клієнтів
 │   ├── dialog/
 │   │   └── ui/           # mount, router, header і навігація
 │   └── networks/
 │       ├── api/           # запити мережевого трафіку
 │       ├── hooks/         # polling мережевих інтерфейсів
-│       ├── model/         # конфігурація, типи та transformations
+│       ├── model/         # конфігурація, типи та перетворення даних
 │       └── ui/            # NetworksView і графіки мереж
-├── shared/               # форматування та SVG chart helpers
+├── shared/               # polling-хук, форматування та SVG helpers
 └── test/                 # спільне тестове налаштування
 ```
 
@@ -147,11 +143,12 @@ src/
 fetch raw ASUS response
 → normalize
 → JSON parse
-→ Zod validation
 → traffic transformation
-→ TanStack Query cache
+→ local polling hook state
 → React render
 ```
+
+Спільний polling-хук виконує запити послідовно кожні 2 секунди, робить один повтор після помилки та скасовує активний запит через `AbortController` під час розмонтування view. Запити не накладаються один на одного.
 
 Для розрахунку швидкості поточні накопичувальні лічильники порівнюються з попереднім вимірюванням. Історія кожного графіка обмежена 30 точками.
 
@@ -163,7 +160,7 @@ fetch raw ASUS response
 - `getTraffic.asp` — трафік клієнтів;
 - `update.cgi` з `output=netdev` — трафік мережевих інтерфейсів.
 
-Формат відповідей може відрізнятися між моделями та версіями прошивки ASUS. Parser-и перевіряють нормалізовані дані через Zod і показують контрольовану помилку, якщо формат не підтримується.
+Формат відповідей може відрізнятися між моделями та версіями прошивки ASUS. Парсери нормалізують JavaScript-подібні відповіді, розбирають їх через `JSON.parse` і перетворюють лічильники на числа без окремої runtime-валідації схеми. Несумісний формат відповіді може спричинити помилку запиту або некоректні числові значення.
 
 ## Дозволи
 

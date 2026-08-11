@@ -1,4 +1,3 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createRoot, type Root } from 'react-dom/client';
 import { ShadowRoot } from '../../../components/ShadowRoot/ShadowRoot';
 import clientsStyles from '../../clients/ui/clients.css?inline';
@@ -10,7 +9,6 @@ import type { DialogView } from './DialogNavigation';
 type MountedDialog = {
   container: HTMLElement;
   root: Root;
-  queryClient: QueryClient;
 };
 
 let mountedDialog: MountedDialog | null = null;
@@ -21,7 +19,6 @@ export function unmountDialog(): void {
   const mounted = mountedDialog;
   mountedDialog = null;
   mounted.root.unmount();
-  mounted.queryClient.clear();
   mounted.container.remove();
 }
 
@@ -32,8 +29,7 @@ export function mountDialog(initialView: DialogView): void {
   document.body.appendChild(container);
 
   const root = createRoot(container);
-  const queryClient = new QueryClient();
-  mountedDialog = { container, root, queryClient };
+  mountedDialog = { container, root };
 
   root.render(
     <ShadowRoot
@@ -42,9 +38,7 @@ export function mountDialog(initialView: DialogView): void {
         ${clientsStyles}\n${networksStyles}\n${navigationStyles}
       `}
     >
-      <QueryClientProvider client={queryClient}>
-        <DialogRouter initialView={initialView} onClose={() => queueMicrotask(unmountDialog)} />
-      </QueryClientProvider>
+      <DialogRouter initialView={initialView} onClose={() => queueMicrotask(unmountDialog)} />
     </ShadowRoot>,
   );
 }

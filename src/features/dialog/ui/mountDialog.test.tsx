@@ -36,4 +36,22 @@ describe('Dialog mount lifecycle', () => {
     expect(requestSignal?.aborted).toBe(true);
     expect(document.getElementById('asus-router-dialog-root')).not.toBeInTheDocument();
   });
+
+  it('replaces the complete shadow host when mounted again', () => {
+    mocks.fetchNetworkSnapshot.mockReturnValue(new Promise(() => undefined));
+
+    act(() => mountDialog('networks'));
+    const firstHost = document.getElementById('asus-router-dialog-root');
+
+    expect(firstHost?.shadowRoot?.querySelector('style')).toBeInTheDocument();
+    expect(firstHost?.shadowRoot?.querySelector('dialog')).toBeInTheDocument();
+
+    act(() => mountDialog('networks'));
+    const secondHost = document.getElementById('asus-router-dialog-root');
+
+    expect(firstHost).not.toBeInTheDocument();
+    expect(secondHost).toBeInTheDocument();
+    expect(secondHost).not.toBe(firstHost);
+    expect(document.querySelectorAll('#asus-router-dialog-root')).toHaveLength(1);
+  });
 });

@@ -103,22 +103,20 @@ npm run verify:bundle
   └── background service worker
         ├── програмно підключає content bundle до активної вкладки
         └── надсилає типізовану команду open-dialog
-              └── content bridge монтує один ShadowRoot
+              └── content bridge створює один ShadowRoot
                     └── DialogRouter
                           ├── початкове меню вибору
                           ├── ClientsView
                           └── NetworksView
 ```
 
-`DialogRouter` зберігає спільні `<dialog>`, header, навігацію та `ShadowRoot`. Під час перемикання розмонтовується лише неактивний view із відповідним polling hook.
+Content bridge створює Shadow DOM host, додає ізольовані стилі та монтує в ньому `DialogRouter`. `DialogRouter` зберігає спільні `<dialog>`, header і навігацію. Під час перемикання розмонтовується лише неактивний view із відповідним polling hook.
 
 Основні директорії:
 
 ```text
 src/
 ├── background/           # обробка кліку по іконці та ін'єкція content bundle
-├── components/
-│   └── ShadowRoot/       # спільна ізоляція UI через Shadow DOM
 ├── content/              # bridge для типізованих команд service worker
 ├── features/
 │   ├── clients/

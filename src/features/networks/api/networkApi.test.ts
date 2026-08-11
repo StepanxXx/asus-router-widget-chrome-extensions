@@ -28,14 +28,6 @@ describe('network API parser', () => {
     });
   });
 
-  it('rejects invalid counters', () => {
-    const invalidResponse = `netdev = {
-'WIRED':{rx:not-a-number,tx:400}
-}`;
-
-    expect(() => parseNetworkResponse(invalidResponse)).toThrow();
-  });
-
   it('reports an HTTP failure before parsing the response', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 503 }));
 

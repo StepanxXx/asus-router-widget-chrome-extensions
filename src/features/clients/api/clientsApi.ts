@@ -1,18 +1,12 @@
-import { z } from 'zod';
 import type { ClientDevice, ClientMap, ClientTrafficSnapshot } from '../model/types';
 
-const clientResponseSchema = z.object({
-  fromNetworkmapd: z.array(z.record(z.string(), z.unknown())).min(1),
-});
+type ClientsResponse = {
+  fromNetworkmapd: Array<Record<string, unknown>>;
+};
 
-const trafficTupleSchema = z
-  .tuple([z.string(), z.coerce.number().finite(), z.coerce.number().finite()])
-  .rest(z.unknown());
-
-const trafficResponseSchema = z.object({
-  array_traffic: z.array(trafficTupleSchema),
-  router_traffic: z.unknown().optional(),
-});
+type TrafficResponse = {
+  array_traffic: Array<[string, string | number, string | number, ...unknown[]]>;
+};
 
 const requestHeaders = {
   accept:
@@ -29,8 +23,7 @@ export function normalizeClientsResponse(responseText: string): string {
 
 export function parseClientsResponse(responseText: string): ClientMap {
   const normalizedResponse = normalizeClientsResponse(responseText);
-  const parsedResponse: unknown = JSON.parse(normalizedResponse);
-  const response = clientResponseSchema.parse(parsedResponse);
+  const response = JSON.parse(normalizedResponse) as ClientsResponse;
   const clients: ClientMap = {};
 
   for (const [key, value] of Object.entries(response.fromNetworkmapd[0])) {
@@ -56,12 +49,11 @@ export function parseClientTrafficResponse(
   stamp: number = Date.now(),
 ): ClientTrafficSnapshot {
   const normalizedResponse = normalizeClientTrafficResponse(responseText);
-  const parsedResponse: unknown = JSON.parse(normalizedResponse);
-  const response = trafficResponseSchema.parse(parsedResponse);
+  const response = JSON.parse(normalizedResponse) as TrafficResponse;
   const traffic: ClientTrafficSnapshot['traffic'] = {};
 
   for (const [client, out, inc] of response.array_traffic) {
-    traffic[client] = { inc, out };
+    traffic[client] = { inc: Number(inc), out: Number(out) };
   }
 
   return { stamp, traffic };

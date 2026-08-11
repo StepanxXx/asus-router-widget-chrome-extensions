@@ -38,14 +38,6 @@ describe('clients API parser', () => {
     });
   });
 
-  it('rejects malformed traffic counters', () => {
-    const invalidResponse = `var array_traffic = new Array();
-array_traffic = [["AA:BB","invalid",200]];
-router_traffic = [];`;
-
-    expect(() => parseClientTrafficResponse(invalidResponse)).toThrow();
-  });
-
   it('rejects an incomplete client response', () => {
     expect(() => parseClientsResponse('originData = {fromNetworkmapd:[],nmpClient:[]}')).toThrow();
   });

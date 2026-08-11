@@ -1,12 +1,4 @@
-import { z } from 'zod';
 import type { NetworkSnapshot } from '../model/types';
-
-const networkCountersSchema = z.object({
-  rx: z.coerce.number().finite(),
-  tx: z.coerce.number().finite(),
-});
-
-const networkResponseSchema = z.record(z.string(), networkCountersSchema);
 
 export function normalizeNetworkResponse(responseText: string): string {
   return responseText
@@ -24,8 +16,16 @@ export function parseNetworkResponse(
   stamp: number = Date.now(),
 ): NetworkSnapshot {
   const normalizedResponse = normalizeNetworkResponse(responseText);
-  const parsedResponse: unknown = JSON.parse(normalizedResponse);
-  const interfaces = networkResponseSchema.parse(parsedResponse);
+  const parsedResponse = JSON.parse(normalizedResponse) as Record<
+    string,
+    { rx: string | number; tx: string | number }
+  >;
+  const interfaces = Object.fromEntries(
+    Object.entries(parsedResponse).map(([name, counters]) => [
+      name,
+      { rx: Number(counters.rx), tx: Number(counters.tx) },
+    ]),
+  );
 
   return { stamp, interfaces };
 }

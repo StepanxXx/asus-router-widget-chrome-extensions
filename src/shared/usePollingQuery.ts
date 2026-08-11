@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'preact/hooks';
 
 type PollingQueryState<T> =
   | { data: undefined; error: null; isError: false; isPending: true }

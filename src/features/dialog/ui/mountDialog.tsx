@@ -1,4 +1,4 @@
-import { createRoot, type Root } from 'react-dom/client';
+import { render } from 'preact';
 import clientsStyles from '../../clients/ui/clients.css?inline';
 import networksStyles from '../../networks/ui/networks.css?inline';
 import navigationStyles from './dialog.css?inline';
@@ -7,7 +7,7 @@ import type { DialogView } from './DialogNavigation';
 
 type MountedDialog = {
   host: HTMLElement;
-  root: Root;
+  container: HTMLElement;
 };
 
 let mountedDialog: MountedDialog | null = null;
@@ -17,7 +17,7 @@ export function unmountDialog(): void {
 
   const mounted = mountedDialog;
   mountedDialog = null;
-  mounted.root.unmount();
+  render(null, mounted.container);
   mounted.host.remove();
 }
 
@@ -36,10 +36,10 @@ export function mountDialog(initialView: DialogView): void {
   const container = document.createElement('div');
   shadowRoot.appendChild(container);
 
-  const root = createRoot(container);
-  mountedDialog = { host, root };
+  mountedDialog = { host, container };
 
-  root.render(
+  render(
     <DialogRouter initialView={initialView} onClose={() => queueMicrotask(unmountDialog)} />,
+    container,
   );
 }

@@ -16,7 +16,7 @@ Chrome-розширення для перегляду клієнтів і мер
 
 ## Технології
 
-- React 19;
+- Preact;
 - TypeScript;
 - Vite і CRXJS;
 - Manifest V3;

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { ClientsView } from '../../clients/ui/ClientsDialog';
 import { NetworksView } from '../../networks/ui/NetworksDialog';
 import { DialogNavigation, type DialogView } from './DialogNavigation';

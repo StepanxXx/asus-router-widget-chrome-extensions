@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { act, waitFor } from '@testing-library/react';
+import { act, waitFor } from '@testing-library/preact';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { mountDialog, unmountDialog } from './mountDialog';
 

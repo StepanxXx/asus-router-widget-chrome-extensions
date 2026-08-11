@@ -15,13 +15,13 @@
 
 Runtime-залежності:
 
-| Залежність  | Потрапляє в extension bundle |
-| ----------- | ---------------------------: |
-| `react`     |                           ✅ |
-| `react-dom` |                           ✅ |
+| Залежність | Потрапляє в extension bundle |
+| ---------- | ---------------------------: |
+| `preact`   |                           ✅ |
 
-TanStack Query і Zod уже видалені. Їх замінюють:
+React, ReactDOM, TanStack Query і Zod уже видалені. Їх замінюють:
 
+- Preact — UI runtime, hooks і JSX;
 - `src/shared/usePollingQuery.ts` — polling, retry, стан і `AbortController`;
 - `JSON.parse()` та перетворення через `Number()` — обробка відповідей ASUS без runtime-валідації схеми.
 
@@ -32,9 +32,11 @@ Build/test залежності (`Vite`, CRXJS, TypeScript, Vitest, Testing Libr
 Останній перевірений production build:
 
 ```text
-dist/src/content/index.js       ≈ 209.8 KB raw
-dist/assets/index.ts-*.js       ≈ 209.8 KB raw / 65.8 KB gzip
+До оптимізації:  ≈ 209.8 KB raw / 65.8 KB gzip
+Після фази 3:   ≈ 31.9 KB raw / 11.5 KB gzip
 ```
+
+Фази 1–3 реалізовані й пройшли автоматичні перевірки. Для них залишається ручний smoke test у Chrome.
 
 Перед кожною фазою потрібно повторно виконати `npm run build` і зафіксувати актуальні raw/gzip значення, оскільки hash і розмір bundle можуть змінюватися.
 
@@ -149,6 +151,8 @@ mounted.host.remove();
 
 ## Фаза 3. React → Preact
 
+**Статус:** реалізовано нативними Preact imports без compat aliases; автоматичні перевірки пройдені, ручний smoke test очікується.
+
 ### Причина
 
 Після видалення TanStack Query застосунок використовує невеликий набір React API: hooks, JSX та `createRoot`. Preact є головним кандидатом на зменшення залишкового runtime overhead.
@@ -161,53 +165,30 @@ mounted.host.remove();
 npm install preact
 ```
 
-### 3.2. Додати aliases у Vite
+### 3.2. Обраний спосіб міграції
 
-```ts
-resolve: {
-  alias: {
-    react: 'preact/compat',
-    'react-dom/test-utils': 'preact/test-utils',
-    'react-dom': 'preact/compat',
-    'react/jsx-runtime': 'preact/jsx-runtime',
-  },
-},
-```
-
-Більш специфічні aliases мають стояти перед загальними.
+Замість compat aliases application imports переведені безпосередньо на `preact`, `preact/hooks` і `preact.render`. Це виключає compat layer із production bundle.
 
 ### 3.3. Налаштувати TypeScript
 
-Vite aliases не керують TypeScript type resolution. Додати в `tsconfig.json`:
+У `tsconfig.json` налаштовано нативний JSX runtime:
 
 ```json
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "react": ["./node_modules/preact/compat/"],
-      "react/jsx-runtime": ["./node_modules/preact/jsx-runtime"],
-      "react-dom": ["./node_modules/preact/compat/"],
-      "react-dom/*": ["./node_modules/preact/compat/*"]
-    }
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact"
   }
 }
 ```
 
 ### 3.4. Налаштувати Vitest
 
-`vitest.config.ts` зараз є окремою конфігурацією й не успадковує aliases із `vite.config.ts`. Потрібно:
-
-- винести aliases у спільну константу та використати її в обох конфігураціях; або
-- явно повторити aliases у `vitest.config.ts`.
-
-Тести повинні виконувати application code через Preact compat, а не непомітно залишатися на React runtime.
-
-Окремо перевірити сумісність `@testing-library/react`. Якщо тести не використовують фактичний Preact runtime або виникають несумісності, перейти на `@testing-library/preact` і відповідні imports.
+`@testing-library/react` замінено на `@testing-library/preact`. Тести виконують application code через той самий Preact runtime, що й production build; aliases у Vitest не потрібні.
 
 ### 3.5. Видалити React
 
-Після успішних build, typecheck і тестів:
+Виконано після успішних build, typecheck і тестів:
 
 ```bash
 npm uninstall react react-dom @types/react @types/react-dom

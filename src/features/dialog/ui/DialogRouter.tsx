@@ -24,7 +24,7 @@ const viewLabels: Record<DialogView, string> = {
   networks: 'Networks',
 };
 
-const viewIcons: Record<DialogView | 'close', () => VNode> = {
+const viewIcons: Record<DialogView | 'close' | 'back', () => VNode> = {
   menu: () => (
     <svg className="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
       <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
@@ -54,6 +54,18 @@ const viewIcons: Record<DialogView | 'close', () => VNode> = {
     >
       <path d="M18 6 6 18" />
       <path d="m6 6 12 12" />
+    </svg>
+  ),
+  back: () => (
+    <svg
+      className="icon-svg back"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke-linecap="round"
+      strok-linejoin="round"
+    >
+      <path d="m12 19-7-7 7-7" />
+      <path d="M19 12H5" />
     </svg>
   ),
 };
@@ -88,7 +100,6 @@ export function DialogRouter({ initialView, onClose }: DialogRouterProps) {
             />
           ))}
           <SidebarItem
-            key="close"
             icon={viewIcons['close']()}
             label="Close"
             isActive={false}
@@ -105,10 +116,10 @@ export function DialogRouter({ initialView, onClose }: DialogRouterProps) {
           <button
             className="dialog-close"
             type="button"
-            aria-label="Close"
+            aria-label="Back to home"
             onClick={() => setView('menu')}
           >
-            {viewIcons['close']()}
+            {viewIcons['back']()}
           </button>
         </header>
         {view === 'clients' && <ClientsView />}

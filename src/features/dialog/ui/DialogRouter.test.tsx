@@ -42,7 +42,7 @@ describe('DialogRouter', () => {
     const onClose = vi.fn();
     render(<DialogRouter initialView="clients" onClose={onClose} />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+    fireEvent.click(screen.getByRole('link', { name: 'Close' }));
 
     expect(onClose).toHaveBeenCalledOnce();
   });

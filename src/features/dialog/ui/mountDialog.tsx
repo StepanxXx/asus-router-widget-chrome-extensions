@@ -1,7 +1,9 @@
 import { render } from 'preact';
+import resetStyles from '../../../shared/reset.css?inline';
 import clientsStyles from '../../clients/ui/clients.css?inline';
 import networksStyles from '../../networks/ui/networks.css?inline';
 import navigationStyles from './dialog.css?inline';
+import layoutStyles from '../../../components/SidebarLayout/SidebarLayout.css?inline';
 import { DialogRouter } from './DialogRouter';
 import type { DialogView } from './DialogNavigation';
 
@@ -30,7 +32,13 @@ export function mountDialog(initialView: DialogView): void {
 
   const shadowRoot = host.attachShadow({ mode: 'open' });
   const style = document.createElement('style');
-  style.textContent = `${clientsStyles}\n${networksStyles}\n${navigationStyles}`;
+  style.textContent = `
+  ${resetStyles}
+  ${clientsStyles}
+  ${networksStyles}
+  ${navigationStyles}
+  ${layoutStyles}
+  `;
   shadowRoot.appendChild(style);
 
   const container = document.createElement('div');

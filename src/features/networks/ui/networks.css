@@ -4,10 +4,12 @@
 }
 
 .networks-table {
-  width: 100%;
+  min-width: 600px;
+  max-width: 100%;
   border-spacing: 0;
   border-collapse: collapse;
   font-size: 12px;
+  margin: 0 auto;
 }
 
 .networks-table th,

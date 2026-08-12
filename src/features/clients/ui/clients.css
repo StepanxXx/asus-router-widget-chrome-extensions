@@ -1,6 +1,5 @@
 .clients-content {
   padding: 12px 16px 16px 0px;
-  overflow-x: auto;
 }
 
 .clients-table {
@@ -34,6 +33,18 @@ td.clients-title-cellr {
   text-align: left !important;
   background: #111827;
   padding-left: 16px;
+  overflow: visible;
+}
+
+th.clients-title-cell::after,
+td.clients-title-cellr::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -100px;
+  bottom: -1px;
+  width: 100px;
+  background-color: var(--sidebar-bg);
 }
 
 .clients-card {

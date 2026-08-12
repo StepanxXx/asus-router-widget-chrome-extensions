@@ -44,7 +44,7 @@ describe('Dialog mount lifecycle', () => {
     const firstHost = document.getElementById('asus-router-dialog-root');
 
     expect(firstHost?.shadowRoot?.querySelector('style')).toBeInTheDocument();
-    expect(firstHost?.shadowRoot?.querySelector('dialog')).toBeInTheDocument();
+    expect(firstHost?.shadowRoot?.querySelector('.sidebar-container')).toBeInTheDocument();
 
     act(() => mountDialog('networks'));
     const secondHost = document.getElementById('asus-router-dialog-root');

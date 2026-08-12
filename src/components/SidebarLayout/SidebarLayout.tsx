@@ -1,11 +1,8 @@
 import { createContext, type ComponentChildren } from 'preact';
 import { useContext } from 'preact/hooks';
-import './SidebarLayout.css';
 
-// Context for sharing collapsed state with child components
 interface SidebarContextValue {
   isCollapsed: boolean;
-  onToggle?: (e: MouseEvent | HTMLButtonElement) => void;
 }
 
 const SidebarContext = createContext<SidebarContextValue>({
@@ -16,7 +13,7 @@ export const useSidebar = () => useContext(SidebarContext);
 
 export interface SidebarLayoutProps {
   isCollapsed?: boolean;
-  onToggle?: (e: MouseEvent | HTMLButtonElement) => void;
+  onToggle?: (event: MouseEvent) => void;
   title?: string;
   header?: ComponentChildren;
   footer?: ComponentChildren;
@@ -32,9 +29,8 @@ export function SidebarLayout({
   children,
 }: SidebarLayoutProps) {
   return (
-    <SidebarContext.Provider value={{ isCollapsed, onToggle }}>
+    <SidebarContext.Provider value={{ isCollapsed }}>
       <aside className={`sidebar ${isCollapsed ? 'sidebar--collapsed' : 'sidebar--expanded'}`}>
-        {/* Header */}
         <div className="sidebar-header">
           {header ? (
             header
@@ -51,9 +47,9 @@ export function SidebarLayout({
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
                 >
                   <polygon points="12 2 2 7 12 12 22 7 12 2" />
                   <polyline points="2 17 12 22 22 17" />
@@ -65,10 +61,8 @@ export function SidebarLayout({
           )}
         </div>
 
-        {/* Dynamic Children Content */}
         <div className="sidebar-nav-container">{children}</div>
 
-        {/* Footer */}
         <div className="sidebar-footer">
           {footer ? (
             footer
@@ -100,10 +94,6 @@ export function SidebarLayout({
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* Subcomponents for easy composition                                        */
-/* -------------------------------------------------------------------------- */
-
 export interface SidebarNavProps {
   children?: ComponentChildren;
 }
@@ -114,7 +104,6 @@ export function SidebarNav({ children }: SidebarNavProps) {
 
 export interface SidebarItemProps {
   icon: ComponentChildren;
-  isCollapsed?: boolean;
   label?: string;
   href?: string;
   badge?: string;
@@ -157,7 +146,6 @@ export interface SidebarContentProps {
 
 export function SidebarContent({ children, isHidden = false }: SidebarContentProps) {
   const classHidden = isHidden ? 'visually-hidden' : '';
-  document.body.style.overflow = isHidden ? '' : 'hidden';
   return <div className={`sidebar-content ${classHidden}`}>{children}</div>;
 }
 
@@ -166,5 +154,9 @@ export interface SidebarContainerProps {
 }
 
 export function SidebarContainer({ children }: SidebarContainerProps) {
-  return <div className="sidebar-container">{children}</div>;
+  return (
+    <div className="sidebar-container" role="dialog" aria-label="Asus router widget">
+      {children}
+    </div>
+  );
 }

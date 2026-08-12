@@ -5,7 +5,7 @@ import networksStyles from '../../networks/ui/networks.css?inline';
 import navigationStyles from './dialog.css?inline';
 import layoutStyles from '../../../components/SidebarLayout/SidebarLayout.css?inline';
 import { DialogRouter } from './DialogRouter';
-import type { DialogView } from './DialogNavigation';
+import type { DialogView } from './DialogRouter';
 
 type MountedDialog = {
   host: HTMLElement;

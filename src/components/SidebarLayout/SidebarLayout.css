@@ -3,7 +3,8 @@
    Supports two modes: Expanded (розгорнутий) & Collapsed (скорочений)
    ========================================================================== */
 
-:root {
+:root,
+:host {
   --sidebar-width-expanded: 260px;
   --sidebar-width-collapsed: 72px;
   --sidebar-bg: #0f172a;
@@ -16,7 +17,6 @@
   --sidebar-accent: #60a5fa;
   --sidebar-transition: cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 
 .sidebar-container {
   position: fixed;
@@ -45,7 +45,10 @@
   display: flex;
   flex-direction: column;
   border-right: 1px solid var(--sidebar-border);
-  transition: width 0.3s var(--sidebar-transition), box-shadow 0.3s ease, transform 0.3s ease;
+  transition:
+    width 0.3s var(--sidebar-transition),
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
   overflow: hidden;
   user-select: none;
   flex-shrink: 0;
@@ -110,7 +113,10 @@
   outline: none;
   cursor: pointer;
   padding: 0;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
 }
 
 .brand-logo:hover {
@@ -135,7 +141,9 @@
   letter-spacing: -0.02em;
   white-space: nowrap;
   opacity: 1;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
 .sidebar--collapsed .brand-name {
@@ -197,15 +205,24 @@
   min-width: 24px;
 }
 
-.icon-svg {
+.nav-icon .icon-svg {
   width: 20px;
   height: 20px;
+  stroke-width: 2px;
+  stroke: currentColor;
+}
+
+.nav-icon .icon-svg.close {
+  stroke-width: 4px;
+  stroke: brown;
 }
 
 .nav-label {
   white-space: nowrap;
   opacity: 1;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
   overflow: hidden;
   text-overflow: ellipsis;
 }

@@ -15,11 +15,11 @@ vi.mock('../../networks/ui/NetworksDialog', () => ({
 describe('DialogRouter', () => {
   afterEach(cleanup);
 
-  it('opens with a feature selection menu', () => {
+  it('opens with sidebar navigation', () => {
     render(<DialogRouter initialView="menu" onClose={vi.fn()} />);
 
-    expect(screen.getByText('Choose the information you want to view:')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /Clients/ }));
+    expect(screen.getByRole('link', { name: 'Home' })).toHaveClass('active');
+    fireEvent.click(screen.getByRole('link', { name: 'Clients' }));
     expect(screen.getByText('Clients view')).toBeInTheDocument();
   });
 
@@ -29,11 +29,11 @@ describe('DialogRouter', () => {
     const dialog = screen.getByRole('dialog');
     expect(screen.getByText('Clients view')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Networks' }));
+    fireEvent.click(screen.getByRole('link', { name: 'Networks' }));
     expect(screen.getByText('Networks view')).toBeInTheDocument();
     expect(screen.getByRole('dialog')).toBe(dialog);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Clients' }));
+    fireEvent.click(screen.getByRole('link', { name: 'Clients' }));
     expect(screen.getByText('Clients view')).toBeInTheDocument();
     expect(screen.getByRole('dialog')).toBe(dialog);
   });

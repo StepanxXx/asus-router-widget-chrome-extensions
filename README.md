@@ -110,7 +110,7 @@ npm run verify:bundle
                           └── NetworksView
 ```
 
-Content bridge створює Shadow DOM host, додає ізольовані стилі та монтує в ньому `DialogRouter`. `DialogRouter` зберігає спільні `<dialog>`, header і навігацію. Під час перемикання розмонтовується лише неактивний view із відповідним polling hook.
+Content bridge створює Shadow DOM host, додає ізольовані стилі та монтує в ньому `DialogRouter`. `DialogRouter` зберігає спільну sidebar-оболонку, header і навігацію. Під час перемикання розмонтовується лише неактивний view із відповідним polling hook.
 
 Основні директорії:
 

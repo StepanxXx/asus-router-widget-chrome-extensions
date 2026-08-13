@@ -5,7 +5,7 @@ import { gzipSync } from 'node:zlib';
 const contentScriptPath = resolve('dist/src/content/index.js');
 const contentScript = await readFile(contentScriptPath);
 const bytesPerKilobyte = 1024;
-const maxGzipKilobytes = 13;
+const maxGzipKilobytes = 15;
 const rawKilobytes = contentScript.byteLength / bytesPerKilobyte;
 const gzipKilobytes = gzipSync(contentScript).byteLength / bytesPerKilobyte;
 

@@ -1,5 +1,5 @@
 import type { VNode } from 'preact';
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import {
   SidebarContainer,
   SidebarContent,
@@ -78,6 +78,19 @@ export function DialogRouter({ initialView, onClose }: DialogRouterProps) {
     clients: 'Clients',
     networks: 'Network total / speed',
   }[view];
+
+  useEffect(() => {
+    const isMenu = view === 'menu';
+    const originalStyle = document.body.style.overflow;
+
+    if (!isMenu) {
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.body.style.overflow = originalStyle;
+    };
+  }, [view]);
 
   return (
     <SidebarContainer>

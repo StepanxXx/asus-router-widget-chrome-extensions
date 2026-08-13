@@ -235,12 +235,7 @@
 }
 
 .sidebar--collapsed .nav-link {
-  justify-content: center;
-  padding: 12px;
-}
-
-.sidebar--collapsed .nav-icon {
-  margin: 0 auto;
+  padding: 12px 14px;
 }
 
 .nav-badge {

@@ -83,7 +83,7 @@ export function SidebarLayout({
               >
                 <polyline points="15 18 9 12 15 6" />
               </svg>
-              <span className="collapse-text">Hide sidebar</span>
+              <span className="collapse-text">Hide</span>
             </button>
           )}
         </div>

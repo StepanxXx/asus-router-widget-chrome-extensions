@@ -113,7 +113,7 @@ export function DialogRouter({ initialView, onClose }: DialogRouterProps) {
           ))}
           <SidebarItem
             icon={viewIcons['close']()}
-            label="Close"
+            label="Close menu"
             isActive={false}
             onClick={(event) => {
               event.preventDefault();

@@ -35,11 +35,9 @@ export function SidebarLayout({
           {header ? (
             header
           ) : (
-            <div className="sidebar-brand">
-              <button
-                type="button"
+            <a className="sidebar-brand" href="#" onClick={(e) => { e.preventDefault(); onToggle?.(e) }}>
+              <span
                 className="brand-logo"
-                onClick={onToggle}
                 title={isCollapsed ? 'Show menu' : 'Hide menu'}
                 aria-label={isCollapsed ? 'Show menu' : 'Hide menu'}
               >
@@ -55,9 +53,9 @@ export function SidebarLayout({
                   <polyline points="2 17 12 22 22 17" />
                   <polyline points="2 12 12 17 22 12" />
                 </svg>
-              </button>
+              </span>
               <span className="brand-name">{title}</span>
-            </div>
+            </a>
           )}
         </div>
 
@@ -85,7 +83,7 @@ export function SidebarLayout({
               >
                 <polyline points="15 18 9 12 15 6" />
               </svg>
-              <span className="collapse-text">Show more</span>
+              <span className="collapse-text">Hide sidebar</span>
             </button>
           )}
         </div>

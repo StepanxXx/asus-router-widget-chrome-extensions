@@ -81,21 +81,23 @@
   height: 64px;
   display: flex;
   align-items: center;
-  padding: 0 18px;
   border-bottom: 1px solid var(--sidebar-border);
   flex-shrink: 0;
-  transition: padding 0.3s var(--sidebar-transition);
 }
 
-.sidebar--collapsed .sidebar-header {
-  padding: 0 17px;
-}
 
 .sidebar-brand {
   display: flex;
   align-items: center;
   gap: 12px;
   width: 100%;
+  height: 100%;
+  padding: 0 18px;
+  transition: padding 0.3s var(--sidebar-transition);
+}
+
+.sidebar--collapsed .sidebar-brand {
+  padding: 0 17px;
 }
 
 .brand-logo {
@@ -119,7 +121,7 @@
     filter 0.2s ease;
 }
 
-.brand-logo:hover {
+.sidebar-brand:hover .brand-logo {
   transform: scale(1.06);
   filter: brightness(1.12);
   box-shadow: 0 4px 16px rgba(59, 130, 246, 0.5);

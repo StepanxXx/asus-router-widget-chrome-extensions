@@ -61,7 +61,7 @@
 .sidebar-content {
   flex: 1;
   min-width: 0;
-  padding: 0 28px;
+  padding: 0 0 0 28px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;

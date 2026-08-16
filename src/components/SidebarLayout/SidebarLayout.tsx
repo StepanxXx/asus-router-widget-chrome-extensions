@@ -35,7 +35,14 @@ export function SidebarLayout({
           {header ? (
             header
           ) : (
-            <a className="sidebar-brand" href="#" onClick={(e) => { e.preventDefault(); onToggle?.(e) }}>
+            <a
+              className="sidebar-brand"
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                onToggle?.(e);
+              }}
+            >
               <span
                 className="brand-logo"
                 title={isCollapsed ? 'Show menu' : 'Hide menu'}

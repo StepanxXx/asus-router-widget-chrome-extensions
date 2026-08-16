@@ -1,11 +1,18 @@
 // @vitest-environment jsdom
 
-import { cleanup, render, screen } from '@testing-library/preact';
+import { cleanup, fireEvent, render, screen } from '@testing-library/preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { NetworkTrafficState } from '../model/types';
 import { NetworksView } from './NetworksDialog';
 
 const mocks = vi.hoisted(() => ({ useNetworkTraffic: vi.fn() }));
+
+const onClose = vi.fn();
+const networksViewProps = {
+  onClose,
+  onCloseIcon: () => <span aria-hidden="true">Back</span>,
+  title: 'Networks',
+};
 
 vi.mock('../hooks/useNetworkTraffic', () => ({
   useNetworkTraffic: mocks.useNetworkTraffic,
@@ -28,13 +35,19 @@ const networkState: NetworkTrafficState = {
 };
 
 describe('NetworksView', () => {
-  beforeEach(() => mocks.useNetworkTraffic.mockReset());
+  beforeEach(() => {
+    mocks.useNetworkTraffic.mockReset();
+    onClose.mockReset();
+  });
   afterEach(cleanup);
 
   it('renders the loading state', () => {
     mocks.useNetworkTraffic.mockReturnValue({ isPending: true, isError: false } as never);
-    render(<NetworksView />);
+    render(<NetworksView {...networksViewProps} />);
     expect(screen.getByText('Loading…')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Networks' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Back to home' }));
+    expect(onClose).toHaveBeenCalledOnce();
   });
 
   it('renders a controlled error state', () => {
@@ -43,7 +56,7 @@ describe('NetworksView', () => {
       isError: true,
       error: new Error('Router is unavailable'),
     } as never);
-    render(<NetworksView />);
+    render(<NetworksView {...networksViewProps} />);
     expect(screen.getByText('Router is unavailable')).toHaveClass('networks-status--error');
   });
 
@@ -53,7 +66,7 @@ describe('NetworksView', () => {
       isError: false,
       data: networkState,
     } as never);
-    render(<NetworksView />);
+    render(<NetworksView {...networksViewProps} />);
 
     expect(screen.getByText('INTERNET')).toBeInTheDocument();
     expect(screen.getByText('1 MB total')).toBeInTheDocument();
@@ -67,7 +80,7 @@ describe('NetworksView', () => {
       isError: false,
       data: { ...networkState, interfaces: {} },
     } as never);
-    render(<NetworksView />);
+    render(<NetworksView {...networksViewProps} />);
     expect(screen.getByText('No network data found.')).toBeInTheDocument();
   });
 });

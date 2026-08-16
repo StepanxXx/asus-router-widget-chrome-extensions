@@ -9,6 +9,13 @@ const mocks = vi.hoisted(() => ({
   useClientsTraffic: vi.fn(),
 }));
 
+const onClose = vi.fn();
+const clientsViewProps = {
+  onClose,
+  onCloseIcon: () => <span aria-hidden="true">Back</span>,
+  title: 'Clients',
+};
+
 vi.mock('../hooks/useClientsTraffic', () => ({
   useClientsTraffic: mocks.useClientsTraffic,
 }));
@@ -55,21 +62,25 @@ const clientsState: ClientTrafficState = {
 describe('ClientsView', () => {
   beforeEach(() => {
     mocks.useClientsTraffic.mockReset();
+    onClose.mockReset();
   });
 
   afterEach(cleanup);
 
   it('renders loading, empty and error states', () => {
     mocks.useClientsTraffic.mockReturnValue({ isPending: true, isError: false } as never);
-    const view = render(<ClientsView />);
+    const view = render(<ClientsView {...clientsViewProps} />);
     expect(screen.getByText('Loading clients…')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Clients' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Back to home' }));
+    expect(onClose).toHaveBeenCalledOnce();
 
     mocks.useClientsTraffic.mockReturnValue({
       isPending: false,
       isError: false,
       data: { ...clientsState, clients: {} },
     } as never);
-    view.rerender(<ClientsView />);
+    view.rerender(<ClientsView {...clientsViewProps} />);
     expect(screen.getByText('No clients found.')).toBeInTheDocument();
 
     mocks.useClientsTraffic.mockReturnValue({
@@ -77,7 +88,7 @@ describe('ClientsView', () => {
       isError: true,
       error: new Error('Invalid client response'),
     } as never);
-    view.rerender(<ClientsView />);
+    view.rerender(<ClientsView {...clientsViewProps} />);
     expect(screen.getByText('Invalid client response')).toHaveClass('clients-status--error');
   });
 
@@ -88,7 +99,7 @@ describe('ClientsView', () => {
       data: clientsState,
     } as never);
 
-    const { container } = render(<ClientsView />);
+    const { container } = render(<ClientsView {...clientsViewProps} />);
     expect(screen.getByRole('button', { name: 'Online' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByText('<img src=x onerror=alert(1)>')).toBeInTheDocument();
     expect(screen.queryByText('Printer')).not.toBeInTheDocument();
@@ -118,7 +129,7 @@ describe('ClientsView', () => {
       data: clientsState,
     } as never);
 
-    render(<ClientsView />);
+    render(<ClientsView {...clientsViewProps} />);
     fireEvent.click(screen.getByRole('button', { name: 'Offline' }));
 
     expect(screen.getByText('Printer')).toBeInTheDocument();

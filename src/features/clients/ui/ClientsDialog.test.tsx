@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, render, screen } from '@testing-library/preact';
+import { cleanup, fireEvent, render, screen } from '@testing-library/preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ClientTrafficState } from '../model/types';
 import { ClientsView } from './ClientsDialog';
@@ -81,7 +81,7 @@ describe('ClientsView', () => {
     expect(screen.getByText('Invalid client response')).toHaveClass('clients-status--error');
   });
 
-  it('sorts active clients first and renders router values as text', () => {
+  it('shows online clients by default and can display all clients', () => {
     mocks.useClientsTraffic.mockReturnValue({
       isPending: false,
       isError: false,
@@ -89,6 +89,12 @@ describe('ClientsView', () => {
     } as never);
 
     const { container } = render(<ClientsView />);
+    expect(screen.getByRole('button', { name: 'Online' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByText('<img src=x onerror=alert(1)>')).toBeInTheDocument();
+    expect(screen.queryByText('Printer')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'All' }));
+
     const names = Array.from(container.querySelectorAll('.clients-card-name')).map(
       (element) => element.textContent,
     );
@@ -103,5 +109,20 @@ describe('ClientsView', () => {
     expect(screen.getByLabelText('Not logged in')).toHaveClass('is-logged-out');
     expect(screen.getAllByLabelText('Current receive rate')).toHaveLength(2);
     expect(screen.getAllByLabelText('Current transmit rate')).toHaveLength(2);
+  });
+
+  it('switches between online and offline clients', () => {
+    mocks.useClientsTraffic.mockReturnValue({
+      isPending: false,
+      isError: false,
+      data: clientsState,
+    } as never);
+
+    render(<ClientsView />);
+    fireEvent.click(screen.getByRole('button', { name: 'Offline' }));
+
+    expect(screen.getByText('Printer')).toBeInTheDocument();
+    expect(screen.queryByText('<img src=x onerror=alert(1)>')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Offline' })).toHaveAttribute('aria-pressed', 'true');
   });
 });

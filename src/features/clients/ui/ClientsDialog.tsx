@@ -1,3 +1,4 @@
+import { useState } from 'preact/hooks';
 import { useClientsTraffic } from '../hooks/useClientsTraffic';
 import { getRssiLabel } from '../model/signalStrength';
 import type { ClientTrafficState, ClientView } from '../model/types';
@@ -24,6 +25,14 @@ const connectionNames: Record<string, string> = {
   '3': '5 GHz - 2',
   '4': '6 GHz',
 };
+
+type ClientFilter = 'all' | 'online' | 'offline';
+
+const clientFilters: Array<{ value: ClientFilter; label: string }> = [
+  { value: 'all', label: 'All' },
+  { value: 'online', label: 'Online' },
+  { value: 'offline', label: 'Offline' },
+];
 
 function displayValue(value: unknown): string {
   if (value === null || value === undefined || value === '') return '—';
@@ -89,30 +98,41 @@ function ClientHeader({ client }: { client: ClientView }) {
         {name}
       </strong>
       <span>{connection}</span>
-      {(client.isWL !== '0' && online) ? (
+      {client.isWL !== '0' && online ? (
         <span className="clients-signal" title={getRssiLabel(client.rssi)}>
           <SignalStrengthIcon value={client.rssi} />
           RSSI {displayValue(client.rssi)}
         </span>
-      ): <span className="clients-signal">&nbsp;</span>}
+      ) : (
+        <span className="clients-signal">&nbsp;</span>
+      )}
       <span className="clients-online-state">{online ? '● Online' : '○ Offline'}</span>
       {client.internetState === 0 && <span className="clients-blocked">Internet blocked</span>}
     </div>
   );
 }
 
-function sortClients(state: ClientTrafficState): Array<[string, ClientView]> {
-  return Object.entries(state.clients).sort(([, first], [, second]) => {
-    const loginDifference = Number(second.isLogin ?? 0) - Number(first.isLogin ?? 0);
-    if (loginDifference !== 0) return loginDifference;
-    const onlineDifference = Number(second.isOnline ?? 0) - Number(first.isOnline ?? 0);
-    if (onlineDifference !== 0) return onlineDifference;
-    return Number(second.isWL ?? 0) - Number(first.isWL ?? 0);
-  });
+function sortClients(state: ClientTrafficState, filter: ClientFilter): Array<[string, ClientView]> {
+  return Object.entries(state.clients)
+    .filter(([, client]) => {
+      if (filter === 'all') return true;
+      return filter === 'online' ? client.isOnline === '1' : client.isOnline !== '1';
+    })
+    .sort(([, first], [, second]) => {
+      const loginDifference = Number(second.isLogin ?? 0) - Number(first.isLogin ?? 0);
+      if (loginDifference !== 0) return loginDifference;
+      const onlineDifference = Number(second.isOnline ?? 0) - Number(first.isOnline ?? 0);
+      if (onlineDifference !== 0) return onlineDifference;
+      return Number(second.isWL ?? 0) - Number(first.isWL ?? 0);
+    });
 }
 
-function ClientsTable({ state }: { state: ClientTrafficState }) {
-  const clients = sortClients(state);
+function ClientsTable({ state, filter }: { state: ClientTrafficState; filter: ClientFilter }) {
+  const clients = sortClients(state, filter);
+
+  if (clients.length === 0) {
+    return <p className="clients-status">No {filter} clients found.</p>;
+  }
 
   return (
     <table className="clients-table">
@@ -233,6 +253,8 @@ function ClientsTable({ state }: { state: ClientTrafficState }) {
 
 export function ClientsView() {
   const query = useClientsTraffic();
+  const [filter, setFilter] = useState<ClientFilter>('online');
+  const hasClients = query.data && Object.keys(query.data.clients).length > 0;
 
   return (
     <div className="clients-content">
@@ -243,8 +265,23 @@ export function ClientsView() {
       {query.data && Object.keys(query.data.clients).length === 0 && (
         <p className="clients-status">No clients found.</p>
       )}
-      {query.data && Object.keys(query.data.clients).length > 0 && (
-        <ClientsTable state={query.data} />
+      {hasClients && (
+        <>
+          <div className="clients-filters" role="group" aria-label="Filter clients">
+            {clientFilters.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                className={`clients-filter ${filter === option.value ? 'is-active' : ''}`}
+                aria-pressed={filter === option.value}
+                onClick={() => setFilter(option.value)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+          <ClientsTable state={query.data} filter={filter} />
+        </>
       )}
     </div>
   );

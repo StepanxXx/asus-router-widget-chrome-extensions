@@ -116,6 +116,42 @@ describe('transformNetworkData', () => {
     expect(state?.interfaces.INTERNET0.speed.log.at(-1)?.stamp).toBe(35000);
   });
 
+  it('calculates min and max from all samples visible in the graphs', () => {
+    const initial = transformNetworkData(
+      createSnapshot(1000, {
+        internetRx: 1000,
+        internetTx: 2000,
+        wiredRx: 3000,
+        wiredTx: 4000,
+      }),
+      null,
+      networkTypes,
+    );
+    const peak = transformNetworkData(
+      createSnapshot(2000, {
+        internetRx: 1100,
+        internetTx: 2500,
+        wiredRx: 3200,
+        wiredTx: 4050,
+      }),
+      initial,
+      networkTypes,
+    );
+    const lowerCurrentSpeed = transformNetworkData(
+      createSnapshot(3000, {
+        internetRx: 1125,
+        internetTx: 2550,
+        wiredRx: 3210,
+        wiredTx: 4055,
+      }),
+      peak,
+      networkTypes,
+    );
+
+    expect(lowerCurrentSpeed.max).toBe(500);
+    expect(lowerCurrentSpeed.min).toBe(5);
+  });
+
   it('ignores configured interfaces missing from a snapshot', () => {
     const state = transformNetworkData(
       { stamp: 1000, interfaces: { WIRED: { rx: 10, tx: 20 } } },

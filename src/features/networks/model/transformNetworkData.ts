@@ -30,7 +30,6 @@ export function transformNetworkData(
   configuredNetworks: Readonly<Record<NetworkType, string>>,
 ): NetworkTrafficState {
   const interfaces: Record<string, NetworkTraffic> = {};
-  const allSpeeds: number[] = [];
   const elapsedSeconds = previous ? (current.stamp - previous.stamp) / 1000 : 0;
 
   for (const network of Object.keys(configuredNetworks) as NetworkType[]) {
@@ -58,14 +57,17 @@ export function transformNetworkData(
       stamp: current.stamp,
     });
 
-    allSpeeds.push(speed.inc, speed.out);
     interfaces[network] = { total, speed: { ...speed, log } };
   }
 
+  const graphSpeeds = Object.values(interfaces).flatMap((traffic) =>
+    traffic.speed.log.flatMap((sample) => [sample.inc, sample.out]),
+  );
+  
   return {
     stamp: current.stamp,
     interfaces,
-    max: allSpeeds.length > 0 ? Math.max(...allSpeeds) : 0,
-    min: allSpeeds.length > 0 ? Math.min(...allSpeeds) : 0,
+    max: graphSpeeds.length > 0 ? Math.max(...graphSpeeds) : 0,
+    min: graphSpeeds.length > 0 ? Math.min(...graphSpeeds) : 0,
   };
 }

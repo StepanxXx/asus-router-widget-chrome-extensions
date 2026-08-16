@@ -1,5 +1,23 @@
 import { describe, expect, it } from 'vitest';
-import { getRssiLabel } from './signalStrength';
+import { convertRssi, getRssiLabel } from './signalStrength';
+
+describe('convertRssi', () => {
+  it.each([
+    [-100, 1],
+    [-90, 1],
+    [-80, 1],
+    [-79, 2],
+    [-70, 2],
+    [-69, 3],
+    [-61, 3],
+    [-60, 4],
+    [-59, 4],
+    [-50, 4],
+    ['invalid', 1],
+  ])('maps %s dBm to signal level %s', (rssi, level) => {
+    expect(convertRssi(rssi)).toBe(level);
+  });
+});
 
 describe('getRssiLabel', () => {
   it.each([

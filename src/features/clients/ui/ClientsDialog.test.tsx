@@ -96,6 +96,7 @@ describe('ClientsView', () => {
     expect(names).toEqual(['<img src=x onerror=alert(1)>', 'Printer']);
     expect(container.querySelector('img')).not.toBeInTheDocument();
     expect(screen.getAllByRole('img', { name: 'Client traffic history' })).toHaveLength(2);
+    expect(screen.getByRole('img', { name: 'Strong: 4 of 4' })).toBeInTheDocument();
     expect(screen.getAllByLabelText('download')).toHaveLength(4);
     expect(screen.getAllByLabelText('upload')).toHaveLength(4);
     expect(screen.getByLabelText('Logged in')).toHaveClass('is-logged-in');

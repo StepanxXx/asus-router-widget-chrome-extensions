@@ -3,6 +3,7 @@ import { getRssiLabel } from '../model/signalStrength';
 import type { ClientTrafficState, ClientView } from '../model/types';
 import { formatMegabitsPerSecond, formatMegabytes } from '../../../shared/formatTraffic';
 import { TrafficChart } from '../../../shared/TrafficChart';
+import { SignalStrengthIcon } from './SignalStrengthIcon';
 
 const detailRows = [
   'mac',
@@ -88,9 +89,12 @@ function ClientHeader({ client }: { client: ClientView }) {
         {name}
       </strong>
       <span>{connection}</span>
-      {client.isWL !== '0' && online && (
-        <span title={getRssiLabel(client.rssi)}>RSSI {displayValue(client.rssi)}</span>
-      )}
+      {(client.isWL !== '0' && online) ? (
+        <span className="clients-signal" title={getRssiLabel(client.rssi)}>
+          <SignalStrengthIcon value={client.rssi} />
+          RSSI {displayValue(client.rssi)}
+        </span>
+      ): <span className="clients-signal">&nbsp;</span>}
       <span className="clients-online-state">{online ? '● Online' : '○ Offline'}</span>
       {client.internetState === 0 && <span className="clients-blocked">Internet blocked</span>}
     </div>

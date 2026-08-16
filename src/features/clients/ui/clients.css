@@ -69,6 +69,23 @@ th.clients-title-cell::after {
   text-overflow: ellipsis;
 }
 
+.clients-signal {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.clients-signal-icon {
+  width: 20px;
+  height: 16px;
+  flex: 0 0 auto;
+  fill: #4b5563;
+}
+
+.clients-signal-icon .is-active {
+  fill: #38bdf8;
+}
+
 .clients-online-state {
   color: #38bdf8;
 }

@@ -56,7 +56,7 @@ describe('NetworksView', () => {
     render(<NetworksView />);
 
     expect(screen.getByText('INTERNET')).toBeInTheDocument();
-    expect(screen.getByText('Total 1 MB')).toBeInTheDocument();
+    expect(screen.getByText('1 MB total')).toBeInTheDocument();
     expect(screen.getByText('Traffic peak')).toBeInTheDocument();
     expect(screen.getByRole('img', { name: 'INTERNET traffic history' })).toBeInTheDocument();
   });

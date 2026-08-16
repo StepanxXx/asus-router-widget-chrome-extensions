@@ -1,59 +1,110 @@
 import { formatMegabitsPerSecond, formatMegabytes } from '../../../shared/formatTraffic';
 import { TrafficChart } from '../../../shared/TrafficChart';
-import { networkTypes, type NetworkType } from '../model/networkConfig';
-import type { NetworkTrafficState, TrafficVector } from '../model/types';
 import { useNetworkTraffic } from '../hooks/useNetworkTraffic';
+import { networkTypes, type NetworkType } from '../model/networkConfig';
+import type { NetworkTraffic, NetworkTrafficState, TrafficVector } from '../model/types';
 
-function Direction({ vector }: { vector: TrafficVector }) {
+const trafficMetrics: Array<{ vector: TrafficVector; label: string; symbol: string }> = [
+  { vector: 'inc', label: 'Download', symbol: '▼' },
+  { vector: 'out', label: 'Upload', symbol: '▲' },
+];
+
+function TrafficMetric({
+  traffic,
+  vector,
+  label,
+  symbol,
+}: (typeof trafficMetrics)[number] & {
+  traffic: NetworkTraffic;
+}) {
   return (
-    <span
-      className={`networks-vector networks-vector--${vector}`}
-      aria-label={vector === 'inc' ? 'incoming' : 'outgoing'}
-    >
-      {vector === 'inc' ? '▼' : '▲'}
-    </span>
+    <div className={`networks-metric networks-metric--${vector}`}>
+      <div className="networks-metric-heading">
+        <span className="networks-vector" aria-hidden="true">
+          {symbol}
+        </span>
+        <span>{label}</span>
+      </div>
+      <strong className="networks-speed">
+        {formatMegabitsPerSecond(traffic.speed[vector] ?? 0)}
+      </strong>
+      <span className="networks-total" title="Total data transferred">
+        {formatMegabytes(traffic.total[vector])} total
+      </span>
+    </div>
   );
 }
 
-function NetworkRows({ state }: { state: NetworkTrafficState }) {
+function NetworkCard({
+  name,
+  traffic,
+  max,
+}: {
+  name: string;
+  traffic: NetworkTraffic;
+  max: number;
+}) {
   return (
-    <tbody>
-      <tr>
-        <td className="networks-total-cell" colSpan={4}>
-          Max per minute: {formatMegabitsPerSecond(state.max)}
-        </td>
-      </tr>
-      {(Object.keys(networkTypes) as NetworkType[]).map((network) => {
-        const traffic = state.interfaces[network];
-        if (!traffic) return null;
+    <article className="networks-card">
+      <header className="networks-card-header">
+        <div>
+          <span className="networks-card-eyebrow">Network interface</span>
+          <h3>{name}</h3>
+        </div>
+        <span className="networks-active-status">
+          <span aria-hidden="true">●</span> Active
+        </span>
+      </header>
+      <div className="networks-metrics">
+        {trafficMetrics.map((metric) => (
+          <TrafficMetric key={metric.vector} traffic={traffic} {...metric} />
+        ))}
+      </div>
+      <div className="networks-chart-panel">
+        <div className="networks-chart-header">
+          <span>Traffic history</span>
+          <span className="networks-chart-legend">
+            <span className="is-download">Download</span>
+            <span className="is-upload">Upload</span>
+          </span>
+        </div>
+        <TrafficChart
+          samples={traffic.speed.log}
+          max={max}
+          className="networks-chart"
+          label={`${name} traffic history`}
+        />
+      </div>
+    </article>
+  );
+}
 
-        return (['inc', 'out'] as const).map((vector, index) => (
-          <tr key={`${network}-${vector}`}>
-            {index === 0 && (
-              <th className="networks-title-cell" rowSpan={2} scope="rowgroup">
-                {networkTypes[network]}
-              </th>
-            )}
-            <td className="networks-metric-cell">
-              {formatMegabytes(traffic.total[vector])} <Direction vector={vector} />
-            </td>
-            <td className="networks-metric-cell">
-              {formatMegabitsPerSecond(traffic.speed[vector])} <Direction vector={vector} />
-            </td>
-            {index === 0 && (
-              <td className="networks-diagram-cell" rowSpan={2}>
-                <TrafficChart
-                  samples={traffic.speed.log}
-                  max={state.max}
-                  className="networks-chart"
-                  label="Network traffic history"
-                />
-              </td>
-            )}
-          </tr>
-        ));
-      })}
-    </tbody>
+function NetworkCards({ state }: { state: NetworkTrafficState }) {
+  const networks = (Object.keys(networkTypes) as NetworkType[]).flatMap((network) => {
+    const traffic = state.interfaces[network];
+    return traffic ? [{ network, traffic }] : [];
+  });
+
+  if (networks.length === 0) return <p className="networks-status">No network data found.</p>;
+
+  return (
+    <>
+      <div className="networks-summary">
+        <span className="networks-summary-label">Traffic peak</span>
+        <strong>{formatMegabitsPerSecond(state.max)}</strong>
+        <span className="networks-summary-caption">Maximum across all interfaces</span>
+      </div>
+      <div className="networks-grid">
+        {networks.map(({ network, traffic }) => (
+          <NetworkCard
+            key={network}
+            name={networkTypes[network]}
+            traffic={traffic}
+            max={state.max}
+          />
+        ))}
+      </div>
+    </>
   );
 }
 
@@ -66,11 +117,7 @@ export function NetworksView() {
       {query.isError && (
         <p className="networks-status networks-status--error">{query.error.message}</p>
       )}
-      {query.data && (
-        <table className="networks-table">
-          <NetworkRows state={query.data} />
-        </table>
-      )}
+      {query.data && <NetworkCards state={query.data} />}
     </div>
   );
 }

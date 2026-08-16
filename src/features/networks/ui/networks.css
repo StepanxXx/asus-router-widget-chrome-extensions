@@ -1,64 +1,182 @@
 .networks-content {
   min-height: 80px;
-  padding: 12px;
+  padding: 16px;
 }
 
-.networks-table {
-  min-width: 600px;
-  max-width: 100%;
-  border-spacing: 0;
-  border-collapse: collapse;
+.networks-summary {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 12px;
+  align-items: center;
+  margin-bottom: 14px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgb(56 189 248 / 16%), rgb(17 24 39 / 45%));
+  border: 1px solid rgb(56 189 248 / 35%);
+  border-radius: 10px;
+}
+
+.networks-summary-label {
+  grid-row: span 2;
+  color: #bae6fd;
   font-size: 12px;
-}
-
-.networks-table th,
-.networks-table td {
-  padding: 8px;
-  text-align: right;
-  border-top: 1px solid #374151;
-}
-
-.networks-table tr:nth-child(1) th,
-.networks-table tr:nth-child(2) th,
-.networks-table tr:nth-child(1) td,
-.networks-table tr:nth-child(2) td {
-  border: none;
-}
-
-.networks-title-cell {
-  color: #d1d5db;
-  text-align: left !important;
-}
-
-.networks-total-cell {
-  color: #d1d5db;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.networks-diagram-cell {
-  width: 150px;
+.networks-summary strong {
+  color: #f9fafb;
+  font-size: 18px;
+}
+.networks-summary-caption {
+  color: #94a3b8;
+  font-size: 11px;
 }
 
-.networks-vector--inc {
-  color: #198754;
+.networks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 14px;
 }
 
-.networks-vector--out {
-  color: #dc3545;
+.networks-card {
+  min-width: 0;
+  overflow: hidden;
+  background: rgb(17 24 39 / 72%);
+  border: 1px solid #374151;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 16%);
+}
+
+.networks-card-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #293548;
+}
+
+.networks-card-eyebrow {
+  color: #64748b;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.networks-card h3 {
+  margin: 2px 0 0;
+  color: #f9fafb;
+  font-size: 16px;
+}
+
+.networks-active-status {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  padding: 4px 8px;
+  color: #86efac;
+  font-size: 11px;
+  background: rgb(34 197 94 / 12%);
+  border: 1px solid rgb(34 197 94 / 35%);
+  border-radius: 999px;
+}
+
+.networks-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: #293548;
+  border-bottom: 1px solid #293548;
+}
+
+.networks-metric {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  gap: 4px;
+  padding: 14px 16px;
+  background: #111827;
+}
+
+.networks-metric-heading {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.networks-vector {
+  font-size: 14px;
+  font-weight: 700;
+}
+.networks-metric--inc .networks-vector,
+.networks-chart-legend .is-download {
+  color: #22c55e;
+}
+.networks-metric--out .networks-vector,
+.networks-chart-legend .is-upload {
+  color: #fb7185;
+}
+.networks-speed,
+.networks-total {
+  display: block;
+  color: #f8fafc;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.networks-chart-panel {
+  padding: 12px 16px 14px;
+}
+
+.networks-chart-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.networks-chart-legend {
+  display: flex;
+  gap: 10px;
+}
+
+.networks-chart-legend span::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 4px;
+  background: currentColor;
+  border-radius: 50%;
 }
 
 .networks-chart {
-  --traffic-chart-inc-area: rgb(25 135 84 / 30%);
-  --traffic-chart-out-area: rgb(220 53 69 / 30%);
-  --traffic-chart-inc-line: #198754;
-  --traffic-chart-out-line: #dc3545;
+  --traffic-chart-inc-area: rgb(34 197 94 / 24%);
+  --traffic-chart-out-area: rgb(251 113 133 / 20%);
+  --traffic-chart-inc-line: #22c55e;
+  --traffic-chart-out-line: #fb7185;
+  display: block;
+  width: 100%;
+  height: 90px;
 }
 
 .networks-status {
   margin: 16px;
   text-align: center;
 }
-
 .networks-status--error {
   color: #f87171;
+}
+
+@media (max-width: 520px) {
+  .networks-content {
+    padding: 12px;
+  }
+  .networks-grid {
+    grid-template-columns: 1fr;
+  }
 }

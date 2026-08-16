@@ -1,3 +1,4 @@
+import type { VNode } from 'preact';
 import { useState } from 'preact/hooks';
 import { useClientsTraffic } from '../hooks/useClientsTraffic';
 import { getRssiLabel } from '../model/signalStrength';
@@ -251,37 +252,55 @@ function ClientsTable({ state, filter }: { state: ClientTrafficState; filter: Cl
   );
 }
 
-export function ClientsView() {
+type ClientsViewProps = {
+  onClose: () => void;
+  onCloseIcon: () => VNode;
+  title: string;
+};
+
+export function ClientsView({ onClose, onCloseIcon, title }: ClientsViewProps) {
   const query = useClientsTraffic();
   const [filter, setFilter] = useState<ClientFilter>('online');
 
   return (
-    <div className="clients-content">
-      {query.isPending && <p className="clients-status">Loading clients…</p>}
-      {query.isError && (
-        <p className="clients-status clients-status--error">{query.error.message}</p>
-      )}
-      {query.data && Object.keys(query.data.clients).length === 0 && (
-        <p className="clients-status">No clients found.</p>
-      )}
-      {query.data && Object.keys(query.data.clients).length > 0 && (
-        <>
-          <div className="clients-filters" role="group" aria-label="Filter clients">
-            {clientFilters.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                className={`clients-filter ${filter === option.value ? 'is-active' : ''}`}
-                aria-pressed={filter === option.value}
-                onClick={() => setFilter(option.value)}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
+    <>
+      <header className="dialog-header">
+        <button className="dialog-close" type="button" aria-label="Back to home" onClick={onClose}>
+          {onCloseIcon()}
+        </button>
+        <div className="dialog-title">
+          <span>Live router insights</span>
+          <h2>{title}</h2>
+        </div>
+        <div className="clients-filters" role="group" aria-label="Filter clients">
+          {clientFilters.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              className={`clients-filter ${filter === option.value ? 'is-active' : ''}`}
+              aria-pressed={filter === option.value}
+              onClick={() => setFilter(option.value)}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+        <span className="dialog-live-status">
+          <span aria-hidden="true" /> Live
+        </span>
+      </header>
+      <div className="clients-content">
+        {query.isPending && <p className="clients-status">Loading clients…</p>}
+        {query.isError && (
+          <p className="clients-status clients-status--error">{query.error.message}</p>
+        )}
+        {query.data && Object.keys(query.data.clients).length === 0 && (
+          <p className="clients-status">No clients found.</p>
+        )}
+        {query.data && Object.keys(query.data.clients).length > 0 && (
           <ClientsTable state={query.data} filter={filter} />
-        </>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }

@@ -1,31 +1,33 @@
-.clients-content {
-  padding: 12px 16px 16px 0px;
-}
-
 .clients-filters {
   display: flex;
-  gap: 4px;
-  padding: 0 0 12px 16px;
+  gap: 6px;
+  width: fit-content;
+  padding: 4px;
+  background: rgb(5 14 26 / 48%);
+  border: 1px solid rgb(148 163 184 / 10%);
+  border-radius: 12px;
 }
 
 .clients-filter {
-  padding: 5px 12px;
+  padding: 7px 14px;
   color: #d1d5db;
   font: inherit;
   cursor: pointer;
-  background: #1f2937;
-  border: 1px solid #4b5563;
-  border-radius: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
 }
 
 .clients-filter:hover {
-  border-color: #38bdf8;
+  color: #f8fafc;
+  background: rgb(255 255 255 / 4%);
 }
 
 .clients-filter.is-active {
   color: #f9fafb;
-  background: rgb(56 189 248 / 20%);
-  border-color: #38bdf8;
+  color: #ccfbf1;
+  background: linear-gradient(135deg, rgb(20 184 166 / 22%), rgb(14 165 233 / 12%));
+  border-color: rgb(45 212 191 / 22%);
 }
 
 .clients-table {
@@ -33,6 +35,9 @@
   font-size: 12px;
   border-spacing: 0;
   border-collapse: collapse;
+  background: rgb(8 20 34 / 54%);
+  border: 1px solid rgb(148 163 184 / 10%);
+  border-radius: 14px;
 }
 
 .clients-table th,
@@ -40,12 +45,12 @@
   width: 190px;
   min-width: 190px;
   max-width: 190px;
-  padding: 7px;
+  padding: 9px;
   overflow: hidden;
   text-align: right;
   text-overflow: ellipsis;
   white-space: nowrap;
-  border-bottom: 1px solid #293548;
+  border-bottom: 1px solid rgb(148 163 184 / 9%);
 }
 
 th.clients-title-cell {
@@ -55,8 +60,8 @@ th.clients-title-cell {
   color: #d1d5db;
   font-weight: 600;
   text-align: left !important;
-  background: #111827;
-  padding-left: 16px;
+  background: #091624;
+  padding-left: 18px;
   overflow: visible;
 }
 
@@ -73,15 +78,17 @@ th.clients-title-cell::after {
 .clients-card {
   display: grid;
   gap: 4px;
-  min-height: 120px;
-  padding: 8px;
+  min-height: 128px;
+  padding: 11px;
   text-align: left;
-  border: 1px solid #4b5563;
-  border-radius: 8px;
+  background: linear-gradient(160deg, rgb(18 39 57 / 88%), rgb(9 22 36 / 88%));
+  border: 1px solid rgb(148 163 184 / 15%);
+  border-radius: 12px;
 }
 
 .clients-card.is-online {
-  border-color: #38bdf8;
+  border-color: rgb(45 212 191 / 42%);
+  box-shadow: inset 0 0 0 1px rgb(45 212 191 / 5%);
 }
 
 .clients-card.is-offline {
@@ -112,7 +119,7 @@ th.clients-title-cell::after {
 }
 
 .clients-online-state {
-  color: #38bdf8;
+  color: #2dd4bf;
 }
 
 .is-offline .clients-online-state {
@@ -199,7 +206,7 @@ th.clients-title-cell::after {
 .clients-chart {
   --traffic-chart-inc-area: rgb(34 197 94 / 30%);
   --traffic-chart-out-area: rgb(251 113 133 / 30%);
-  --traffic-chart-inc-line: #22c55e;
+  --traffic-chart-inc-line: #2dd4bf;
   --traffic-chart-out-line: #f87171;
 }
 

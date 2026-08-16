@@ -1,3 +1,4 @@
+import { VNode } from 'preact';
 import { formatMegabitsPerSecond, formatMegabytes } from '../../../shared/formatTraffic';
 import { TrafficChart } from '../../../shared/TrafficChart';
 import { useNetworkTraffic } from '../hooks/useNetworkTraffic';
@@ -108,16 +109,36 @@ function NetworkCards({ state }: { state: NetworkTrafficState }) {
   );
 }
 
-export function NetworksView() {
+type NetworksViewProps = {
+  onClose: () => void;
+  onCloseIcon: () => VNode;
+  title: string;
+};
+
+export function NetworksView({ onClose, onCloseIcon, title }: NetworksViewProps) {
   const query = useNetworkTraffic();
 
   return (
-    <div className="networks-content">
-      {query.isPending && <p className="networks-status">Loading…</p>}
-      {query.isError && (
-        <p className="networks-status networks-status--error">{query.error.message}</p>
-      )}
-      {query.data && <NetworkCards state={query.data} />}
-    </div>
+    <>
+      <header className="dialog-header">
+        <button className="dialog-close" type="button" aria-label="Back to home" onClick={onClose}>
+          {onCloseIcon()}
+        </button>
+        <div className="dialog-title">
+          <span>Live router insights</span>
+          <h2>{title}</h2>
+        </div>
+        <span className="dialog-live-status">
+          <span aria-hidden="true" /> Live
+        </span>
+      </header>
+      <div className="networks-content">
+        {query.isPending && <p className="networks-status">Loading…</p>}
+        {query.isError && (
+          <p className="networks-status networks-status--error">{query.error.message}</p>
+        )}
+        {query.data && <NetworkCards state={query.data} />}
+      </div>
+    </>
   );
 }

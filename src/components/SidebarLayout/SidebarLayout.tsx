@@ -61,7 +61,12 @@ export function SidebarLayout({
                   <polyline points="2 12 12 17 22 12" />
                 </svg>
               </span>
-              <span className="brand-name">{title}</span>
+              <span className="brand-copy">
+                <span className="brand-name">{title}</span>
+                <span className="brand-status">
+                  <span aria-hidden="true" /> Router online
+                </span>
+              </span>
             </a>
           )}
         </div>
@@ -90,7 +95,7 @@ export function SidebarLayout({
               >
                 <polyline points="15 18 9 12 15 6" />
               </svg>
-              <span className="collapse-text">Hide</span>
+              <span className="collapse-text">Collapse panel</span>
             </button>
           )}
         </div>

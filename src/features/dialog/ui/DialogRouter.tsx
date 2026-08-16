@@ -123,19 +123,20 @@ export function DialogRouter({ initialView, onClose }: DialogRouterProps) {
         </SidebarNav>
       </SidebarLayout>
       <SidebarContent isHidden={view === 'menu'}>
-        <header className="dialog-header">
-          <button
-            className="dialog-close"
-            type="button"
-            aria-label="Back to home"
-            onClick={() => setView('menu')}
-          >
-            {viewIcons['back']()}
-          </button>
-          <h2>{title}</h2>
-        </header>
-        {view === 'clients' && <ClientsView />}
-        {view === 'networks' && <NetworksView />}
+        {view === 'clients' && (
+          <ClientsView
+            onClose={() => setView('menu')}
+            onCloseIcon={viewIcons['back']}
+            title={title}
+          />
+        )}
+        {view === 'networks' && (
+          <NetworksView
+            onClose={() => setView('menu')}
+            onCloseIcon={viewIcons['back']}
+            title={title}
+          />
+        )}
       </SidebarContent>
     </SidebarContainer>
   );

@@ -63,7 +63,7 @@ export function transformNetworkData(
   const graphSpeeds = Object.values(interfaces).flatMap((traffic) =>
     traffic.speed.log.flatMap((sample) => [sample.inc, sample.out]),
   );
-  
+
   return {
     stamp: current.stamp,
     interfaces,

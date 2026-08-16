@@ -29,7 +29,6 @@
 }
 
 .clients-table {
-  min-width: 100%;
   color: inherit;
   font-size: 12px;
   border-spacing: 0;
@@ -38,8 +37,9 @@
 
 .clients-table th,
 .clients-table td {
-  min-width: 120px;
-  max-width: 180px;
+  width: 190px;
+  min-width: 190px;
+  max-width: 190px;
   padding: 7px;
   overflow: hidden;
   text-align: right;
@@ -52,7 +52,6 @@ th.clients-title-cell {
   position: sticky;
   left: 0;
   z-index: 1;
-  min-width: 110px !important;
   color: #d1d5db;
   font-weight: 600;
   text-align: left !important;
@@ -74,7 +73,7 @@ th.clients-title-cell::after {
 .clients-card {
   display: grid;
   gap: 4px;
-  min-height: 92px;
+  min-height: 120px;
   padding: 8px;
   text-align: left;
   border: 1px solid #4b5563;

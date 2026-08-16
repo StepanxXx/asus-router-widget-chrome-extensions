@@ -16,6 +16,12 @@
     sans-serif !important;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 .dialog-header {
   position: sticky;
   top: 0;
@@ -23,7 +29,8 @@
   z-index: 2;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: start;
+  gap: 8px;
   padding: 12px 16px;
   color: #d1d5db;
   background: transparent;

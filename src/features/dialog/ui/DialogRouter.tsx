@@ -124,7 +124,6 @@ export function DialogRouter({ initialView, onClose }: DialogRouterProps) {
       </SidebarLayout>
       <SidebarContent isHidden={view === 'menu'}>
         <header className="dialog-header">
-          <h2>{title}</h2>
           <button
             className="dialog-close"
             type="button"
@@ -133,6 +132,7 @@ export function DialogRouter({ initialView, onClose }: DialogRouterProps) {
           >
             {viewIcons['back']()}
           </button>
+          <h2>{title}</h2>
         </header>
         {view === 'clients' && <ClientsView />}
         {view === 'networks' && <NetworksView />}

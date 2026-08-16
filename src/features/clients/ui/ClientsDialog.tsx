@@ -254,7 +254,6 @@ function ClientsTable({ state, filter }: { state: ClientTrafficState; filter: Cl
 export function ClientsView() {
   const query = useClientsTraffic();
   const [filter, setFilter] = useState<ClientFilter>('online');
-  const hasClients = query.data && Object.keys(query.data.clients).length > 0;
 
   return (
     <div className="clients-content">
@@ -265,7 +264,7 @@ export function ClientsView() {
       {query.data && Object.keys(query.data.clients).length === 0 && (
         <p className="clients-status">No clients found.</p>
       )}
-      {hasClients && (
+      {query.data && Object.keys(query.data.clients).length > 0 && (
         <>
           <div className="clients-filters" role="group" aria-label="Filter clients">
             {clientFilters.map((option) => (
